@@ -14,6 +14,10 @@ namespace Entities.Concrete
         public string LastName { get; set; }
         public string IdentityNumber { get; set; }
         public DateTime BirthDate { get; set; }
-        public int CvId { get; set; }
+
+        public JobSeekerCv JobSeekerCv { get; set; }
+        public int JobSeekerCvId { get; set; }
+
+        public ICollection<JobSeekerCv> JobSeekerCvs { get; set; }
     }
 }

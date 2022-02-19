@@ -10,7 +10,9 @@ namespace Entities.Concrete
     public class JobSeekerCvImage : EntityBase, IEntity
     {
         public int Id { get; set; }
-        public int JobSeekerCvId { get; set; }
         public string Url { get; set; }
+
+        public JobSeekerCv JobSeekerCv { get; set; }
+        public int JobSeekerCvId { get; set; }
     }
 }

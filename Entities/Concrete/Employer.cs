@@ -1,4 +1,5 @@
 ﻿using Core.Entities.Abstract;
+using Core.Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,9 @@ namespace Entities.Concrete
         public string WebSite { get; set; }
         public string CorporateEmail { get; set; }
         public string Phone { get; set; }
+
+        public User User { get; set; }
+        public ICollection<EmployerUpdate> EmployerUpdates { get; set; }
+        public ICollection<JobAdvert> JobAdverts { get; set; }
     }
 }

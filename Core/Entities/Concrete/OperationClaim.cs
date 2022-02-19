@@ -5,14 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Concrete
+namespace Core.Entities.Concrete
 {
-    public class JobSeekerCvSkill : EntityBase, IEntity
+    public class OperationClaim : EntityBase, IEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public JobSeekerCv JobSeekerCv { get; set; }
-        public int JobSeekerCvId { get; set; }
+        public ICollection<UserOperationClaim> UserOperationClaims { get; set; }
     }
 }

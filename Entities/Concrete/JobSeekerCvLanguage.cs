@@ -10,8 +10,12 @@ namespace Entities.Concrete
     public class JobSeekerCvLanguage : EntityBase, IEntity
     {
         public int Id { get; set; }
-        public int JobSeekerCvId { get; set; }
-        public string LanguageId { get; set; }
         public short Level { get; set; }
+
+        public JobSeekerCv JobSeekerCv { get; set; }
+        public int JobSeekerCvId { get; set; }
+
+        public Language Language { get; set; }
+        public string LanguageId { get; set; }
     }
 }

@@ -1,20 +1,20 @@
 ﻿using Core.Entities.Abstract;
-using Core.Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Concrete
+namespace Core.Entities.Concrete
 {
-    public class CompanyStaffVerification : EntityBase, IEntity
+    public class UserOperationClaim : EntityBase, IEntity
     {
         public int Id { get; set; }
-        public bool IsAproved { get; set; }
-        public DateTime? ApprovalDate { get; set; }
 
         public User User { get; set; }
         public int UserId { get; set; }
+
+        public OperationClaim OperationClaim { get; set; }
+        public int OperationClaimId { get; set; }
     }
 }

@@ -10,8 +10,12 @@ namespace Entities.Concrete
     public class JobSeekerCvWebSite : EntityBase, IEntity
     {
         public int Id { get; set; }
-        public int JobSeekerCvId { get; set; }
-        public short WebSiteId { get; set; }
         public string Address { get; set; }
+
+        public JobSeekerCv JobSeekerCv { get; set; }
+        public int JobSeekerCvId { get; set; }
+
+        public WebSite WebSite { get; set; }
+        public short WebSiteId { get; set; }
     }
 }

@@ -11,5 +11,7 @@ namespace Entities.Concrete
     {
         public short Id { get; set; }
         public string Name { get; set; }
+
+        public ICollection<JobAdvert> JobAdverts { get; set; }
     }
 }
