@@ -18,6 +18,8 @@ namespace Entities.Concrete
         public DateTime BirthDate { get; set; }
 
         public JobSeekerCv JobSeekerCv { get; set; }
+        public User User { get; set; }
+
         public ICollection<JobSeekerCv> JobSeekerCvs { get; set; }
     }
 }
