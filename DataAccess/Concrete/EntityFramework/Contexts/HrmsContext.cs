@@ -1,4 +1,5 @@
-﻿using Entities.Concrete;
+﻿using DataAccess.Concrete.EntityFramework.Mappings;
+using Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,38 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
 {
     public class HrmsContext : DbContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public HrmsContext(DbContextOptions<HrmsContext> options) : base(options)
         {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB; Database=Hrms; Trusted_Connection=true");
+
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfiguration(new CityMap());
+            modelBuilder.ApplyConfiguration(new CompanyStaffMap());
+            modelBuilder.ApplyConfiguration(new CompanyStaffVerificationMap());
+            modelBuilder.ApplyConfiguration(new EmailActivationMap());
+            modelBuilder.ApplyConfiguration(new EmployerMap());
+            modelBuilder.ApplyConfiguration(new EmployerUpdateMap());
+            modelBuilder.ApplyConfiguration(new JobAdvertMap());
+            modelBuilder.ApplyConfiguration(new JobPositionMap());
+            modelBuilder.ApplyConfiguration(new JobSeekerCvEducationMap());
+            modelBuilder.ApplyConfiguration(new JobSeekerCvExperienceMap());
+            modelBuilder.ApplyConfiguration(new JobSeekerCvImageMap());
+            modelBuilder.ApplyConfiguration(new JobSeekerCvLanguageMap());
+            modelBuilder.ApplyConfiguration(new JobSeekerCvMap());
+            modelBuilder.ApplyConfiguration(new JobSeekerCvSkillMap());
+            modelBuilder.ApplyConfiguration(new JobSeekerCvWebSiteMap());
+            modelBuilder.ApplyConfiguration(new JobSeekerMap());
+            modelBuilder.ApplyConfiguration(new JobSeekersFavoriteJobAdvertMap());
+            modelBuilder.ApplyConfiguration(new LanguageMap());
+            modelBuilder.ApplyConfiguration(new OperationClaimMap());
+            modelBuilder.ApplyConfiguration(new UserMap());
+            modelBuilder.ApplyConfiguration(new OperationClaimMap());
+            modelBuilder.ApplyConfiguration(new WebSiteMap());
+            modelBuilder.ApplyConfiguration(new WorkingTimeMap());
+            modelBuilder.ApplyConfiguration(new WorkingTypeMap());
         }
 
         public DbSet<City> Cities { get; set; }
