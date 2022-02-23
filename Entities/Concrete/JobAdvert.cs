@@ -30,5 +30,7 @@ namespace Entities.Concrete
 
         public WorkingType WorkingType { get; set; }
         public short? WorkingTypeId { get; set; }
+
+        public ICollection<JobSeekersFavoriteJobAdvert> JobSeekersFavoriteJobAdverts { get; set; }
     }
 }

@@ -21,5 +21,6 @@ namespace Entities.Concrete
         public User User { get; set; }
 
         public ICollection<JobSeekerCv> JobSeekerCvs { get; set; }
+        public ICollection<JobSeekersFavoriteJobAdvert> JobSeekersFavoriteJobAdverts { get; set; }
     }
 }

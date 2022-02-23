@@ -16,6 +16,6 @@ namespace Entities.Concrete
         public int JobSeekerCvId { get; set; }
 
         public Language Language { get; set; }
-        public string LanguageId { get; set; }
+        public int LanguageId { get; set; }
     }
 }
