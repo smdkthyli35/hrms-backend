@@ -12,9 +12,9 @@ namespace Entities.Concrete
         public int Id { get; set; }
 
         public JobAdvert JobAdvert { get; set; }
-        public int JobAdvertId { get; set; }
+        public int? JobAdvertId { get; set; }
 
         public JobSeeker JobSeeker { get; set; }
-        public int JobSeekerId { get; set; }
+        public int? JobSeekerId { get; set; }
     }
 }

@@ -35,7 +35,7 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
             modelBuilder.ApplyConfiguration(new JobSeekerCvSkillMap());
             modelBuilder.ApplyConfiguration(new JobSeekerCvWebSiteMap());
             modelBuilder.ApplyConfiguration(new JobSeekerMap());
-            modelBuilder.ApplyConfiguration(new JobSeekersFavoriteJobAdvertMap());
+            //modelBuilder.ApplyConfiguration(new JobSeekersFavoriteJobAdvertMap());
             modelBuilder.ApplyConfiguration(new LanguageMap());
             modelBuilder.ApplyConfiguration(new OperationClaimMap());
             modelBuilder.ApplyConfiguration(new UserMap());
@@ -61,7 +61,7 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
         public DbSet<JobSeekerCvLanguage> jobSeekerCvLanguages { get; set; }
         public DbSet<JobSeekerCvSkill> JobSeekerCvSkills { get; set; }
         public DbSet<JobSeekerCvWebSite> JobSeekerCvWebSites { get; set; }
-        public DbSet<JobSeekersFavoriteJobAdvert> JobSeekersFavoriteJobAdverts { get; set; }
+        //public DbSet<JobSeekersFavoriteJobAdvert> JobSeekersFavoriteJobAdverts { get; set; }
         public DbSet<Language> Languages { get; set; }
         public DbSet<WebSite> WebSites { get; set; }
         public DbSet<WorkingTime> WorkingTimes { get; set; }

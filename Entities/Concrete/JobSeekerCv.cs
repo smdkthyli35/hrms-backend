@@ -13,7 +13,7 @@ namespace Entities.Concrete
         public string CoverLetter { get; set; }
 
         public JobSeeker JobSeeker { get; set; }
-        public int JobSeekerId { get; set; }
+        public int? JobSeekerId { get; set; }
 
         public ICollection<JobSeekerCvEducation> JobSeekerCvEducations { get; set; }
         public ICollection<JobSeekerCvExperience> JobSeekerCvExperiences { get; set; }
