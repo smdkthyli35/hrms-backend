@@ -98,10 +98,10 @@ namespace Business.Concrete
 
         public async Task<IResult> UpdateAsync(City city, string modifiedByName)
         {
-            var category = await _cityDal.GetAsync(a => a.Id == city.Id);
-            category.ModifiedByName = modifiedByName;
-            var updatedCategory = await _cityDal.UpdateAsync(category);
-            return new SuccessResult(Messages.City.Update(updatedCategory.Name));
+            var oldCity = await _cityDal.GetAsync(a => a.Id == city.Id);
+            oldCity.ModifiedByName = modifiedByName;
+            var updatedCity = await _cityDal.UpdateAsync(oldCity);
+            return new SuccessResult(Messages.City.Update(updatedCity.Name));
         }
     }
 }

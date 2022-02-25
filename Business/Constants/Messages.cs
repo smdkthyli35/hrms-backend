@@ -36,5 +36,63 @@ namespace Business.Constants
                 return $"{cityName} adlı şehir başarıyla veritabanından silinmiştir.";
             }
         }
+
+        public static class CompanyStaff
+        {
+            public static string NotFound(bool isPlural)
+            {
+                if (isPlural) return "Hiçbir şirket personel bulunamadı.";
+                return "Böyle bir şirket personeli bulunamadı.";
+            }
+
+            public static string Add(string firstName, string lastName)
+            {
+                return $"{firstName} {lastName} adlı şirket personeli başarıyla eklendi.";
+            }
+
+            public static string Delete(string firstName, string lastName)
+            {
+                return $"{firstName} {lastName} adlı şirket personeli başarıyla silindi.";
+            }
+
+            public static string Update(string firstName, string lastName)
+            {
+                return $"{firstName} {lastName} adlı şirket personeli başarıyla güncellendi.";
+            }
+
+            public static string HardDelete(string firstName, string lastName)
+            {
+                return $"{firstName} {lastName} adlı şirket personeli başarıyla veritabanından silindi.";
+            }
+        }
+
+        public static class Employer
+        {
+            public static string NotFound(bool isPlural)
+            {
+                if (isPlural) return "Hiçbir işveren bulunamadı.";
+                return "Böyle bir işveren bulunamadı.";
+            }
+
+            public static string Add(string firstName, string lastName)
+            {
+                return $"{firstName} {lastName} adlı işveren başarıyla eklendi.";
+            }
+
+            public static string Delete(string firstName, string lastName)
+            {
+                return $"{firstName} {lastName} adlı işveren başarıyla silindi.";
+            }
+
+            public static string Update(string firstName, string lastName)
+            {
+                return $"{firstName} {lastName} adlı işveren başarıyla güncellendi.";
+            }
+
+            public static string HardDelete(string firstName, string lastName)
+            {
+                return $"{firstName} {lastName} adlı işveren başarıyla veritabanından silindi.";
+            }
+        }
     }
 }
