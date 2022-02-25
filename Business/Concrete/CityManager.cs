@@ -29,39 +29,79 @@ namespace Business.Concrete
             return new SuccessResult(Messages.City.Add(addCity.Name));
         }
 
-        public Task<IResult> DeleteAsync(int cityId, string modifiedByName)
+        public async Task<IResult> DeleteAsync(int cityId, string modifiedByName)
         {
-            throw new NotImplementedException();
+            var result = await _cityDal.AnyAsync(c => c.Id == cityId);
+            if (result)
+            {
+                var city = await _cityDal.GetAsync(c => c.Id == cityId);
+                city.IsDeleted = true;
+                city.ModifiedByName = modifiedByName;
+                city.ModifiedDate = DateTime.Now;
+                await _cityDal.UpdateAsync(city);
+                return new SuccessResult(Messages.City.Delete(city.Name));
+            }
+            return new ErrorResult(Messages.City.NotFound(isPlural: false));
         }
 
-        public Task<IDataResult<List<City>>> GetAllAsync()
+        public async Task<IDataResult<List<City>>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var cities = await _cityDal.GetAllAsync();
+            if (cities.Count > -1)
+            {
+                return new SuccessDataResult<List<City>>();
+            }
+            return new ErrorDataResult<List<City>>(Messages.City.NotFound(isPlural: true));
         }
 
-        public Task<IDataResult<List<City>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<List<City>>> GetAllByNonDeletedAndActiveAsync()
         {
-            throw new NotImplementedException();
+            var cities = await _cityDal.GetAllAsync(c => !c.IsDeleted && c.IsActive);
+            if (cities.Count > -1)
+            {
+                return new SuccessDataResult<List<City>>();
+            }
+            return new ErrorDataResult<List<City>>(Messages.City.NotFound(isPlural: true));
         }
 
-        public Task<IDataResult<List<City>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<List<City>>> GetAllByNonDeletedAsync()
         {
-            throw new NotImplementedException();
+            var cities = await _cityDal.GetAllAsync(c => !c.IsDeleted);
+            if (cities.Count > -1)
+            {
+                return new SuccessDataResult<List<City>>();
+            }
+            return new ErrorDataResult<List<City>>(Messages.City.NotFound(isPlural: true));
         }
 
-        public Task<IDataResult<City>> GetAsync(int cityId)
+        public async Task<IDataResult<City>> GetAsync(int cityId)
         {
-            throw new NotImplementedException();
+            var city = await _cityDal.GetAsync(c => c.Id == cityId);
+            if (city != null)
+            {
+                return new SuccessDataResult<City>();
+            }
+            return new ErrorDataResult<City>(Messages.City.NotFound(isPlural: false));
         }
 
-        public Task<IResult> HardDeleteAsync(int cityId)
+        public async Task<IResult> HardDeleteAsync(int cityId)
         {
-            throw new NotImplementedException();
+            var result = await _cityDal.AnyAsync(c => c.Id == cityId);
+            if (result)
+            {
+                var city = await _cityDal.GetAsync(c => c.Id == cityId);
+                await _cityDal.DeleteAsync(city);
+                return new SuccessResult(Messages.City.HardDelete(city.Name));
+            }
+            return new ErrorResult(Messages.City.NotFound(isPlural: false));
         }
 
-        public Task<IResult> UpdateAsync(City city, string modifiedByName)
+        public async Task<IResult> UpdateAsync(City city, string modifiedByName)
         {
-            throw new NotImplementedException();
+            var category = await _cityDal.GetAsync(a => a.Id == city.Id);
+            category.ModifiedByName = modifiedByName;
+            var updatedCategory = await _cityDal.UpdateAsync(category);
+            return new SuccessResult(Messages.City.Update(updatedCategory.Name));
         }
     }
 }
