@@ -100,7 +100,7 @@ namespace Business.Concrete
         {
             var oldjobSeekerCvImage = await _jobSeekerCvImageDal.GetAsync(j => j.Id == jobSeekerCvImage.Id);
             oldjobSeekerCvImage.ModifiedByName = modifiedByName;
-            var updatedjobSeekerCvExperience = await _jobSeekerCvImageDal.UpdateAsync(oldjobSeekerCvImage);
+            var updatedJobSeekerCvImage = await _jobSeekerCvImageDal.UpdateAsync(oldjobSeekerCvImage);
             return new SuccessResult(Messages.JobSeekerCvImage.jobSeekerCvImageUpdated);
         }
     }

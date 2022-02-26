@@ -222,5 +222,132 @@ namespace Business.Constants
                 return "Böyle bir iş arayan cv resim bilgisi bulunamadı.";
             }
         }
+
+        public static class JobSeekerCvLanguage
+        {
+            public static string jobSeekerCvLanguageAdded = "İş arayan cv yabancı dili başarıyla eklendi.";
+            public static string jobSeekerCvLanguageDeleted = "İş arayan cv yabancı dili başarıyla silindi.";
+            public static string jobSeekerCvLanguageHardDeleted = "İş arayan cv yabancı dili başarıyla veritabanından silindi.";
+            public static string jobSeekerCvLanguageUpdated = "İş arayan cv yabancı dili başarıyla güncellendi.";
+
+            public static string NotFound(bool isPlural)
+            {
+                if (isPlural) return "Hiçbir iş arayan cv yabancı dil bilgisi bulunamadı";
+                return "Böyle bir iş arayan cv yabancı dil bilgisi bulunamadı.";
+            }
+        }
+
+        public static class JobSeekerCvSkill
+        {
+            public static string jobSeekerCvSkillAdded = "İş arayan cv yeteneği başarıyla eklendi.";
+            public static string jobSeekerCvSkillDeleted = "İş arayan cv yeteneği başarıyla silindi.";
+            public static string jobSeekerCvSkillHardDeleted = "İş arayan cv yeteneği başarıyla veritabanından silindi.";
+            public static string jobSeekerCvSkillUpdated = "İş arayan cv yeteneği başarıyla güncellendi.";
+
+            public static string NotFound(bool isPlural)
+            {
+                if (isPlural) return "Hiçbir iş arayan cv yetenek bilgisi bulunamadı";
+                return "Böyle bir iş arayan cv yetenek bilgisi bulunamadı.";
+            }
+        }
+
+        public static class JobSeekerCvWebSite
+        {
+            public static string jobSeekerCvWebSiteAdded = "İş arayan cv website bilgisi başarıyla eklendi.";
+            public static string jobSeekerCvWebSiteDeleted = "İş arayan cv website bilgisi başarıyla silindi.";
+            public static string jobSeekerCvWebSiteHardDeleted = "İş arayan cv website bilgisi başarıyla veritabanından silindi.";
+            public static string jobSeekerCvWebSiteUpdated = "İş arayan cv website bilgisi başarıyla güncellendi.";
+
+            public static string NotFound(bool isPlural)
+            {
+                if (isPlural) return "Hiçbir iş arayan cv website bilgisi bulunamadı";
+                return "Böyle bir iş arayan cv website bilgisi bulunamadı.";
+            }
+        }
+
+        public static class Language
+        {
+            public static string languageAdded = "Dil bilgisi başarıyla eklendi.";
+            public static string languageDeleted = "Dil bilgisi başarıyla silindi.";
+            public static string languageHardDeleted = "Dil bilgisi başarıyla veritabanından silindi.";
+            public static string languageUpdated = "Dil bilgisi başarıyla güncellendi.";
+
+            public static string NotFound(bool isPlural)
+            {
+                if (isPlural) return "Hiçbir dil bilgisi bulunamadı";
+                return "Böyle bir dil bilgisi bulunamadı.";
+            }
+        }
+
+        public static class User
+        {
+            public static string NotFound(bool isPlural)
+            {
+                if (isPlural) return "Hiçbir kullanıcı bulunamadı.";
+                return "Böyle bir kullanıcı bulunamadı.";
+            }
+
+            public static string Add(string firstName, string lastName)
+            {
+                return $"{firstName} {lastName} adlı kullanıcı başarıyla eklendi.";
+            }
+
+            public static string Delete(string firstName, string lastName)
+            {
+                return $"{firstName} {lastName} adlı kullanıcı başarıyla silindi.";
+            }
+
+            public static string Update(string firstName, string lastName)
+            {
+                return $"{firstName} {lastName} adlı kullanıcı başarıyla güncellendi.";
+            }
+
+            public static string HardDelete(string firstName, string lastName)
+            {
+                return $"{firstName} {lastName} adlı kullanıcı başarıyla veritabanından silindi.";
+            }
+        }
+
+        public static class WebSite
+        {
+            public static string webSiteAdded = "Website bilgisi başarıyla eklendi.";
+            public static string webSiteDeleted = "Website bilgisi başarıyla silindi.";
+            public static string webSiteHardDeleted = "Website bilgisi başarıyla veritabanından silindi.";
+            public static string webSiteUpdated = "Website bilgisi başarıyla güncellendi.";
+
+            public static string NotFound(bool isPlural)
+            {
+                if (isPlural) return "Hiçbir website bilgisi bulunamadı";
+                return "Böyle bir dil website bulunamadı.";
+            }
+        }
+
+        public static class WorkingTime
+        {
+            public static string workingTimeAdded = "Çalışma zamanı bilgisi başarıyla eklendi.";
+            public static string workingTimeDeleted = "Çalışma zamanı bilgisi başarıyla silindi.";
+            public static string workingTimeHardDeleted = "Çalışma zamanı bilgisi başarıyla veritabanından silindi.";
+            public static string workingTimeUpdated = "Çalışma zamanı bilgisi başarıyla güncellendi.";
+
+            public static string NotFound(bool isPlural)
+            {
+                if (isPlural) return "Hiçbir çalışma zamanı bilgisi bulunamadı";
+                return "Böyle bir çalışma zamanı bilgisi bulunamadı.";
+            }
+        }
+
+        public static class WorkingType
+        {
+            public static string workingTypeAdded = "Çalışma tipi bilgisi başarıyla eklendi.";
+            public static string workingTypeDeleted = "Çalışma tipi bilgisi başarıyla silindi.";
+            public static string workingTypeHardDeleted = "Çalışma tipi bilgisi başarıyla veritabanından silindi.";
+            public static string workingTypeUpdated = "Çalışma tipi bilgisi başarıyla güncellendi.";
+
+            public static string NotFound(bool isPlural)
+            {
+                if (isPlural) return "Hiçbir çalışma tipi bilgisi bulunamadı";
+                return "Böyle bir çalışma tipi bilgisi bulunamadı.";
+            }
+        }
     }
 }

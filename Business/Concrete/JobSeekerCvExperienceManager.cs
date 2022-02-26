@@ -100,7 +100,7 @@ namespace Business.Concrete
         {
             var oldjobSeekerCvExperience = await _jobSeekerCvExperienceDal.GetAsync(j => j.Id == jobSeekerCvExperience.Id);
             oldjobSeekerCvExperience.ModifiedByName = modifiedByName;
-            var updatedjobSeekerCvExperience = await _jobSeekerCvExperienceDal.UpdateAsync(oldjobSeekerCvExperience);
+            var updatedJobSeekerCvExperience = await _jobSeekerCvExperienceDal.UpdateAsync(oldjobSeekerCvExperience);
             return new SuccessResult(Messages.JobSeekerCvExperience.jobSeekerCvExperienceUpdated);
         }
     }
