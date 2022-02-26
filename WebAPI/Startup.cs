@@ -1,3 +1,6 @@
+using Core.DependencyResolvers;
+using Core.Extensions;
+using Core.Utilities.IoC;
 using DataAccess.Concrete.EntityFramework.Contexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,6 +36,11 @@ namespace WebAPI
             services.AddScoped<DbContext>(provider => provider.GetService<HrmsContext>());
 
             services.AddControllers();
+
+            services.AddDependencyResolvers(new ICoreModule[] {
+                new CoreModule()
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });
