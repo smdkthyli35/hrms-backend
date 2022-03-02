@@ -46,7 +46,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<List<JobSeeker>>> GetAllAsync()
         {
-            var jobSeekers = await _jobSeekerDal.GetAllAsync(null, j => j.User, j => j.JobSeekerCv);
+            var jobSeekers = await _jobSeekerDal.GetAllAsync(null, j => j.JobSeekerCv);
             if (jobSeekers.Count > -1)
             {
                 return new SuccessDataResult<List<JobSeeker>>();
@@ -56,7 +56,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<List<JobSeeker>>> GetAllByNonDeletedAndActiveAsync()
         {
-            var jobSeekers = await _jobSeekerDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.User, j => j.JobSeekerCv);
+            var jobSeekers = await _jobSeekerDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.JobSeekerCv);
             if (jobSeekers.Count > -1)
             {
                 return new SuccessDataResult<List<JobSeeker>>();
@@ -66,7 +66,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<List<JobSeeker>>> GetAllByNonDeletedAsync()
         {
-            var jobSeekers = await _jobSeekerDal.GetAllAsync(j => !j.IsDeleted, j => j.User, j => j.JobSeekerCv);
+            var jobSeekers = await _jobSeekerDal.GetAllAsync(j => !j.IsDeleted, j => j.JobSeekerCv);
             if (jobSeekers.Count > -1)
             {
                 return new SuccessDataResult<List<JobSeeker>>();
@@ -76,7 +76,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<JobSeeker>> GetAsync(int jobSeekerId)
         {
-            var jobSeeker = await _jobSeekerDal.GetAsync(j => j.Id == jobSeekerId, j => j.User, j => j.JobSeekerCv);
+            var jobSeeker = await _jobSeekerDal.GetAsync(j => j.Id == jobSeekerId, j => j.JobSeekerCv);
             if (jobSeeker != null)
             {
                 return new SuccessDataResult<JobSeeker>();

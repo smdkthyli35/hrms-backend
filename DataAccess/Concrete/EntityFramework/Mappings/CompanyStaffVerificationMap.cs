@@ -16,7 +16,6 @@ namespace DataAccess.Concrete.EntityFramework.Mappings
             builder.HasKey(c => c.Id);
             builder.Property(c => c.Id).ValueGeneratedOnAdd();
             builder.Property(c => c.IsAproved).IsRequired();
-            builder.HasOne<User>(c => c.User).WithMany(u => u.CompanyStaffVerifications).HasForeignKey(c => c.UserId);
             builder.ToTable("CompanyStaffVerifications");
         }
     }

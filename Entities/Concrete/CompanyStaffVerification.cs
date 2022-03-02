@@ -10,10 +10,8 @@ namespace Entities.Concrete
     public class CompanyStaffVerification : EntityBase, IEntity
     {
         public int Id { get; set; }
+        public int UserId { get; set; }
         public bool IsAproved { get; set; }
         public DateTime? ApprovalDate { get; set; }
-
-        public User User { get; set; }
-        public int UserId { get; set; }
     }
 }

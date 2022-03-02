@@ -5,13 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entities.Concrete
+namespace Core.Entities.Concrete
 {
     public class OperationClaim : EntityBase, IEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }
-
-        public ICollection<UserOperationClaim> UserOperationClaims { get; set; }
     }
 }

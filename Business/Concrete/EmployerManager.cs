@@ -26,7 +26,7 @@ namespace Business.Concrete
             employer.CreatedByName = createdByName;
             employer.ModifiedByName = createdByName;
             await _employerDal.AddAsync(employer);
-            return new SuccessResult(Messages.Employer.Add(employer.User.FirstName, employer.User.LastName));
+            return new SuccessResult();
         }
 
         public async Task<IResult> DeleteAsync(int employerId, string modifiedByName)
@@ -39,14 +39,14 @@ namespace Business.Concrete
                 employer.ModifiedByName = modifiedByName;
                 employer.ModifiedDate = DateTime.Now;
                 await _employerDal.UpdateAsync(employer);
-                return new SuccessResult(Messages.Employer.Delete(employer.User.FirstName, employer.User.LastName));
+                return new SuccessResult();
             }
             return new ErrorResult(Messages.Employer.NotFound(isPlural: false));
         }
 
         public async Task<IDataResult<List<Employer>>> GetAllAsync()
         {
-            var employers = await _employerDal.GetAllAsync(null, e => e.User);
+            var employers = await _employerDal.GetAllAsync();
             if (employers.Count > -1)
             {
                 return new SuccessDataResult<List<Employer>>();
@@ -56,7 +56,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<List<Employer>>> GetAllByNonDeletedAndActiveAsync()
         {
-            var employers = await _employerDal.GetAllAsync(e => !e.IsDeleted && e.IsActive, e => e.User);
+            var employers = await _employerDal.GetAllAsync(e => !e.IsDeleted && e.IsActive);
             if (employers.Count > -1)
             {
                 return new SuccessDataResult<List<Employer>>();
@@ -66,7 +66,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<List<Employer>>> GetAllByNonDeletedAsync()
         {
-            var employers = await _employerDal.GetAllAsync(e => !e.IsDeleted, e => e.User);
+            var employers = await _employerDal.GetAllAsync(e => !e.IsDeleted);
             if (employers.Count > -1)
             {
                 return new SuccessDataResult<List<Employer>>();
@@ -76,7 +76,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<Employer>> GetAsync(int employerId)
         {
-            var employer = await _employerDal.GetAsync(e => e.Id == employerId, e => e.User);
+            var employer = await _employerDal.GetAsync(e => e.Id == employerId);
             if (employer != null)
             {
                 return new SuccessDataResult<Employer>();
@@ -91,7 +91,7 @@ namespace Business.Concrete
             {
                 var employer = await _employerDal.GetAsync(e => e.Id == employerId);
                 await _employerDal.DeleteAsync(employer);
-                return new SuccessResult(Messages.Employer.HardDelete(employer.User.FirstName, employer.User.LastName));
+                return new SuccessResult();
             }
             return new ErrorResult(Messages.Employer.NotFound(isPlural: false));
         }
@@ -101,7 +101,7 @@ namespace Business.Concrete
             var oldEmployer = await _employerDal.GetAsync(e => e.Id == employer.Id);
             oldEmployer.ModifiedByName = modifiedByName;
             var updatedEmployer = await _employerDal.UpdateAsync(oldEmployer);
-            return new SuccessResult(Messages.Employer.Update(updatedEmployer.User.FirstName, updatedEmployer.User.LastName));
+            return new SuccessResult();
         }
     }
 }

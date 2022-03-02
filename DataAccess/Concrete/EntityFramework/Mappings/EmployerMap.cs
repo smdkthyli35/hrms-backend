@@ -23,7 +23,6 @@ namespace DataAccess.Concrete.EntityFramework.Mappings
             builder.Property(e => e.CorporateEmail).IsRequired();
             builder.Property(e => e.Phone).HasMaxLength(13);
             builder.Property(e => e.Phone).IsRequired();
-            builder.HasOne<User>(e => e.User).WithMany(u => u.Employers).HasForeignKey(e => e.UserId);
             builder.ToTable("Employers");
         }
     }

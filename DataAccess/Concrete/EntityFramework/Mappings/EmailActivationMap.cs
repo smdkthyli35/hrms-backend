@@ -20,7 +20,6 @@ namespace DataAccess.Concrete.EntityFramework.Mappings
             builder.Property(e => e.Email).HasMaxLength(40);
             builder.Property(e => e.Email).IsRequired();
             builder.Property(e => e.ExpirationDate).IsRequired();
-            builder.HasOne<User>(e => e.User).WithMany(u => u.EmailActivations).HasForeignKey(e => e.UserId);
             builder.ToTable("EmailActivations");
         }
     }

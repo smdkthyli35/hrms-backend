@@ -19,7 +19,6 @@ namespace DataAccess.Concrete.EntityFramework.Mappings
             builder.Property(c => c.FirstName).IsRequired();
             builder.Property(c => c.LastName).HasMaxLength(50);
             builder.Property(c => c.LastName).IsRequired();
-            builder.HasOne<User>(c => c.User).WithMany(u => u.CompanyStaffs).HasForeignKey(a => a.UserId);
             builder.ToTable("CompanyStaffs");
         }
     }

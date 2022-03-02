@@ -46,7 +46,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<List<CompanyStaff>>> GetAllAsync()
         {
-            var companyStaffs = await _companyStaffDal.GetAllAsync(null, c => c.User);
+            var companyStaffs = await _companyStaffDal.GetAllAsync();
             if (companyStaffs.Count > -1)
             {
                 return new SuccessDataResult<List<CompanyStaff>>();
@@ -56,7 +56,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<List<CompanyStaff>>> GetAllByNonDeletedAndActiveAsync()
         {
-            var companyStaffs = await _companyStaffDal.GetAllAsync(c => !c.IsDeleted && c.IsActive, c => c.User);
+            var companyStaffs = await _companyStaffDal.GetAllAsync(c => !c.IsDeleted && c.IsActive);
             if (companyStaffs.Count > -1)
             {
                 return new SuccessDataResult<List<CompanyStaff>>();
@@ -66,7 +66,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<List<CompanyStaff>>> GetAllByNonDeletedAsync()
         {
-            var companyStaffs = await _companyStaffDal.GetAllAsync(c => !c.IsDeleted, c => c.User);
+            var companyStaffs = await _companyStaffDal.GetAllAsync(c => !c.IsDeleted);
             if (companyStaffs.Count > -1)
             {
                 return new SuccessDataResult<List<CompanyStaff>>();
@@ -76,7 +76,7 @@ namespace Business.Concrete
 
         public async Task<IDataResult<CompanyStaff>> GetAsync(int companyStaffId)
         {
-            var companyStaff = await _companyStaffDal.GetAsync(c => c.Id == companyStaffId, c => c.User);
+            var companyStaff = await _companyStaffDal.GetAsync(c => c.Id == companyStaffId);
             if (companyStaff != null)
             {
                 return new SuccessDataResult<CompanyStaff>();

@@ -1,4 +1,5 @@
-﻿using Entities.Concrete;
+﻿using Core.Entities.Concrete;
+using Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -15,8 +16,6 @@ namespace DataAccess.Concrete.EntityFramework.Mappings
         {
             builder.HasKey(u => u.Id);
             builder.Property(u => u.Id).ValueGeneratedOnAdd();
-            builder.HasOne<User>(u => u.User).WithMany(u => u.UserOperationClaims).HasForeignKey(u => u.UserId);
-            builder.HasOne<OperationClaim>(u => u.OperationClaim).WithMany(o => o.UserOperationClaims).HasForeignKey(u => u.OperationClaimId);
             builder.ToTable("UserOperationClaims");
         }
     }

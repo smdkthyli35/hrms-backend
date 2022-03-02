@@ -16,7 +16,6 @@ namespace Entities.Concrete
         public string CorporateEmail { get; set; }
         public string Phone { get; set; }
 
-        public User User { get; set; }
         public ICollection<EmployerUpdate> EmployerUpdates { get; set; }
         public ICollection<JobAdvert> JobAdverts { get; set; }
     }
