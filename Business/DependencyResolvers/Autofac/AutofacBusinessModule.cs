@@ -4,6 +4,7 @@ using Business.Abstract;
 using Business.Concrete;
 using Castle.DynamicProxy;
 using Core.Utilities.Interceptors;
+using Core.Utilities.Security.Jwt;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework.Repositories;
 using System;
@@ -71,6 +72,9 @@ namespace Business.DependencyResolvers.Autofac
 
             builder.RegisterType<WorkingTypeManager>().As<IWorkingTypeService>().SingleInstance();
             builder.RegisterType<EfWorkingTypeDal>().As<IWorkingTypeDal>().SingleInstance();
+
+            builder.RegisterType<AuthManager>().As<IAuthService>();
+            builder.RegisterType<JwtHelper>().As<ITokenHelper>();
 
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
 

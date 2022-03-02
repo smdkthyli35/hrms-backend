@@ -14,9 +14,11 @@ namespace Business.Abstract
         Task<IDataResult<List<User>>> GetAllAsync();
         Task<IDataResult<List<User>>> GetAllByNonDeletedAsync();
         Task<IDataResult<List<User>>> GetAllByNonDeletedAndActiveAsync();
-        Task<IResult> AddAsync(User user, string createdByName);
         Task<IResult> UpdateAsync(User user, string modifiedByName);
         Task<IResult> DeleteAsync(int userId, string modifiedByName);
         Task<IResult> HardDeleteAsync(int userId);
+        Task AddAsync(User user);
+        Task<List<OperationClaim>> GetClaims(User user);
+        Task<User> GetByMail(string email);
     }
 }

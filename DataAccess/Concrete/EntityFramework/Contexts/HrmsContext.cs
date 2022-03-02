@@ -1,4 +1,5 @@
-﻿using DataAccess.Concrete.EntityFramework.Mappings;
+﻿using Core.Entities.Concrete;
+using DataAccess.Concrete.EntityFramework.Mappings;
 using Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,6 +15,10 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
         public HrmsContext(DbContextOptions<HrmsContext> options) : base(options)
         {
 
+        }
+
+        public HrmsContext()
+        {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -58,7 +63,10 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
         public DbSet<JobSeekerCvEducation> JobSeekerCvEducations { get; set; }
         public DbSet<JobSeekerCvExperience> JobSeekerCvExperiences { get; set; }
         public DbSet<JobSeekerCvImage> JobSeekerCvImages { get; set; }
-        public DbSet<JobSeekerCvLanguage> jobSeekerCvLanguages { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<OperationClaim> OperationClaims { get; set; }
+        public DbSet<UserOperationClaim> UserOperationClaims { get; set; }
+        public DbSet<JobSeekerCvLanguage> JobSeekerCvLanguages { get; set; }
         public DbSet<JobSeekerCvSkill> JobSeekerCvSkills { get; set; }
         public DbSet<JobSeekerCvWebSite> JobSeekerCvWebSites { get; set; }
         //public DbSet<JobSeekersFavoriteJobAdvert> JobSeekersFavoriteJobAdverts { get; set; }

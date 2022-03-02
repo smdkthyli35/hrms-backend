@@ -21,12 +21,9 @@ namespace Business.Concrete
             _userDal = userDal;
         }
 
-        public async Task<IResult> AddAsync(User user, string createdByName)
+        public async Task AddAsync(User user)
         {
-            user.CreatedByName = createdByName;
-            user.ModifiedByName = createdByName;
             await _userDal.AddAsync(user);
-            return new SuccessResult(Messages.User.Add(user.FirstName, user.LastName));
         }
 
         public async Task<IResult> DeleteAsync(int userId, string modifiedByName)
@@ -82,6 +79,16 @@ namespace Business.Concrete
                 return new SuccessDataResult<User>();
             }
             return new ErrorDataResult<User>(Messages.User.NotFound(isPlural: true));
+        }
+
+        public async Task<User> GetByMail(string email)
+        {
+            return await _userDal.GetAsync(u => u.Email == email);
+        }
+
+        public async Task<List<OperationClaim>> GetClaims(User user)
+        {
+            return await _userDal.GetClaims(user);
         }
 
         public async Task<IResult> HardDeleteAsync(int userId)
