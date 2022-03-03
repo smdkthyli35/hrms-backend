@@ -1,5 +1,8 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,6 +24,8 @@ namespace Business.Concrete
             _languageDal = languageDal;
         }
 
+        [ValidationAspect(typeof(LanguageValidator))]
+        [CacheRemoveAspect("ILanguageService.Get")]
         public async Task<IResult> AddAsync(Language language, string createdByName)
         {
             language.CreatedByName = createdByName;
@@ -96,6 +101,8 @@ namespace Business.Concrete
             return new SuccessResult(Messages.Language.NotFound(isPlural: false));
         }
 
+        [ValidationAspect(typeof(LanguageValidator))]
+        [CacheRemoveAspect("ILanguageService.Get")]
         public async Task<IResult> UpdateAsync(Language language, string modifiedByName)
         {
             var oldLanguage = await _languageDal.GetAsync(l => l.Id == language.Id);

@@ -1,5 +1,8 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,6 +24,8 @@ namespace Business.Concrete
             _jobPositionDal = jobPositionDal;
         }
 
+        [ValidationAspect(typeof(JobPositionValidator))]
+        [CacheRemoveAspect("IJobPositionService.Get")]
         public async Task<IResult> AddAsync(JobPosition jobPosition, string createdByName)
         {
             jobPosition.CreatedByName = createdByName;
@@ -44,6 +49,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.JobPosition.NotFound(isPlural: false));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobPosition>>> GetAllAsync()
         {
             var jobPositions = await _jobPositionDal.GetAllAsync();
@@ -54,6 +60,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobPosition>>(Messages.JobPosition.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobPosition>>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobPositions = await _jobPositionDal.GetAllAsync(j => !j.IsDeleted && j.IsActive);
@@ -64,6 +71,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobPosition>>(Messages.JobPosition.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobPosition>>> GetAllByNonDeletedAsync()
         {
             var jobPositions = await _jobPositionDal.GetAllAsync(j => !j.IsDeleted);
@@ -74,6 +82,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobPosition>>(Messages.JobPosition.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<JobPosition>> GetAsync(int jobPositionId)
         {
             var jobPosition = await _jobPositionDal.GetAsync(j => j.Id == jobPositionId);
@@ -96,6 +105,8 @@ namespace Business.Concrete
             return new SuccessResult(Messages.JobPosition.NotFound(isPlural: false));
         }
 
+        [ValidationAspect(typeof(JobPositionValidator))]
+        [CacheRemoveAspect("IJobPositionService.Get")]
         public async Task<IResult> UpdateAsync(JobPosition jobPosition, string modifiedByName)
         {
             var oldJobPosition = await _jobPositionDal.GetAsync(j => j.Id == jobPosition.Id);

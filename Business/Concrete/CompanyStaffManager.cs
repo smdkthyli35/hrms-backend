@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,6 +23,7 @@ namespace Business.Concrete
             _companyStaffDal = companyStaffDal;
         }
 
+        [ValidationAspect(typeof(CompanyStaffValidator))]
         public async Task<IResult> AddAsync(CompanyStaff companyStaff, string createdByName)
         {
             companyStaff.CreatedByName = createdByName;
@@ -96,6 +99,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.CompanyStaff.NotFound(isPlural: false));
         }
 
+        [ValidationAspect(typeof(CompanyStaffValidator))]
         public async Task<IResult> UpdateAsync(CompanyStaff companyStaff, string modifiedByName)
         {
             var oldCompanyStaff = await _companyStaffDal.GetAsync(a => a.Id == companyStaff.Id);

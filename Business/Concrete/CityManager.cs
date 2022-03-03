@@ -1,5 +1,7 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,6 +23,7 @@ namespace Business.Concrete
             _cityDal = cityDal;
         }
 
+        [ValidationAspect(typeof(CityValidator))]
         public async Task<IResult> AddAsync(City city, string createdByName)
         {
             city.CreatedByName = createdByName;
@@ -96,6 +99,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.City.NotFound(isPlural: false));
         }
 
+        [ValidationAspect(typeof(CityValidator))]
         public async Task<IResult> UpdateAsync(City city, string modifiedByName)
         {
             var oldCity = await _cityDal.GetAsync(a => a.Id == city.Id);

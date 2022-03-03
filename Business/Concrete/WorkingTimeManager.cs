@@ -1,5 +1,8 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,6 +24,8 @@ namespace Business.Concrete
             _workingTimeDal = workingTimeDal;
         }
 
+        [ValidationAspect(typeof(WorkingTimeValidator))]
+        [CacheRemoveAspect("IWorkingTimeService.Get")]
         public async Task<IResult> AddAsync(WorkingTime workingTime, string createdByName)
         {
             workingTime.CreatedByName = createdByName;
@@ -96,6 +101,8 @@ namespace Business.Concrete
             return new SuccessResult(Messages.WorkingTime.NotFound(isPlural: false));
         }
 
+        [ValidationAspect(typeof(WorkingTimeValidator))]
+        [CacheRemoveAspect("IWorkingTimeService.Get")]
         public async Task<IResult> UpdateAsync(WorkingTime workingTime, string modifiedByName)
         {
             var oldWorkingTime = await _workingTimeDal.GetAsync(w => w.Id == workingTime.Id);

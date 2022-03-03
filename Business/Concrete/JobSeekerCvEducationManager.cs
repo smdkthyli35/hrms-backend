@@ -1,5 +1,8 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,6 +24,8 @@ namespace Business.Concrete
             _jobSeekerCvEducationDal = jobSeekerCvEducationDal;
         }
 
+        [ValidationAspect(typeof(JobSeekerCvEducationValidator))]
+        [CacheRemoveAspect("IJobSeekerCvEducationService.Get")]
         public async Task<IResult> AddAsync(JobSeekerCvEducation jobSeekerCvEducation, string createdByName)
         {
             jobSeekerCvEducation.CreatedByName = createdByName;
@@ -44,6 +49,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.JobSeekerCvEducation.NotFound(isPlural: false));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobSeekerCvEducation>>> GetAllAsync()
         {
             var jobSeekerCvEducations = await _jobSeekerCvEducationDal.GetAllAsync(null, j => j.JobSeekerCv);
@@ -54,6 +60,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobSeekerCvEducation>>(Messages.JobSeekerCvEducation.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobSeekerCvEducation>>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobSeekerCvEducations = await _jobSeekerCvEducationDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.JobSeekerCv, j => j.JobSeekerCv);
@@ -64,6 +71,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobSeekerCvEducation>>(Messages.JobSeekerCvEducation.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobSeekerCvEducation>>> GetAllByNonDeletedAsync()
         {
             var jobSeekerCvEducations = await _jobSeekerCvEducationDal.GetAllAsync(j => !j.IsDeleted, j => j.JobSeekerCv, j => j.JobSeekerCv);
@@ -74,6 +82,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobSeekerCvEducation>>(Messages.JobSeekerCvEducation.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<JobSeekerCvEducation>> GetAsync(int jobSeekerCvEducationId)
         {
             var jobSeekerCvEducation = await _jobSeekerCvEducationDal.GetAsync(j => j.Id == jobSeekerCvEducationId, j => j.JobSeekerCv);
@@ -96,6 +105,8 @@ namespace Business.Concrete
             return new SuccessResult(Messages.JobSeekerCvEducation.NotFound(isPlural: false));
         }
 
+        [ValidationAspect(typeof(JobSeekerCvEducationValidator))]
+        [CacheRemoveAspect("IJobSeekerCvEducationService.Get")]
         public async Task<IResult> UpdateAsync(JobSeekerCvEducation jobSeekerCvEducation, string modifiedByName)
         {
             var oldjobSeekerCvEducation = await _jobSeekerCvEducationDal.GetAsync(j => j.Id == jobSeekerCvEducation.Id);

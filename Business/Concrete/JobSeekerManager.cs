@@ -1,5 +1,8 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,6 +24,8 @@ namespace Business.Concrete
             _jobSeekerDal = jobSeekerDal;
         }
 
+        [ValidationAspect(typeof(JobSeekerValidator))]
+        [CacheRemoveAspect("IJobSeekerService.Get")]
         public async Task<IResult> AddAsync(JobSeeker jobSeeker, string createdByName)
         {
             jobSeeker.CreatedByName = createdByName;
@@ -44,6 +49,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.JobSeeker.NotFound(isPlural: false));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobSeeker>>> GetAllAsync()
         {
             var jobSeekers = await _jobSeekerDal.GetAllAsync(null, j => j.JobSeekerCv);
@@ -54,6 +60,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobSeeker>>(Messages.JobSeeker.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobSeeker>>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobSeekers = await _jobSeekerDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.JobSeekerCv);
@@ -64,6 +71,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobSeeker>>(Messages.JobSeeker.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobSeeker>>> GetAllByNonDeletedAsync()
         {
             var jobSeekers = await _jobSeekerDal.GetAllAsync(j => !j.IsDeleted, j => j.JobSeekerCv);
@@ -74,6 +82,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobSeeker>>(Messages.JobSeeker.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<JobSeeker>> GetAsync(int jobSeekerId)
         {
             var jobSeeker = await _jobSeekerDal.GetAsync(j => j.Id == jobSeekerId, j => j.JobSeekerCv);
@@ -96,6 +105,8 @@ namespace Business.Concrete
             return new SuccessResult(Messages.JobSeeker.NotFound(isPlural: false));
         }
 
+        [ValidationAspect(typeof(JobSeekerValidator))]
+        [CacheRemoveAspect("IJobSeekerService.Get")]
         public async Task<IResult> UpdateAsync(JobSeeker jobSeeker, string modifiedByName)
         {
             var oldjobSeeker = await _jobSeekerDal.GetAsync(j => j.Id == jobSeeker.Id);

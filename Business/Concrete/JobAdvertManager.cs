@@ -1,5 +1,8 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,6 +24,8 @@ namespace Business.Concrete
             _jobAdvertDal = jobAdvertDal;
         }
 
+        [ValidationAspect(typeof(JobAdvertValidator))]
+        [CacheRemoveAspect("IJobAdvertService.Get")]
         public async Task<IResult> AddAsync(JobAdvert jobAdvert, string createdByName)
         {
             jobAdvert.CreatedByName = createdByName;
@@ -44,6 +49,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.JobAdvert.NotFound(isPlural: false));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobAdvert>>> GetAllAsync()
         {
             var jobAdverts = await _jobAdvertDal.GetAllAsync(null, j => j.City, j => j.Employer, j => j.JobPosition, j => j.WorkingTime, j => j.WorkingType);
@@ -54,6 +60,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobAdvert>>(Messages.JobAdvert.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobAdvert>>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobAdverts = await _jobAdvertDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.City, j => j.Employer, j => j.JobPosition, j => j.WorkingTime, j => j.WorkingType);
@@ -64,6 +71,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobAdvert>>(Messages.JobAdvert.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobAdvert>>> GetAllByNonDeletedAsync()
         {
             var jobAdverts = await _jobAdvertDal.GetAllAsync(j => !j.IsDeleted, j => j.City, j => j.Employer, j => j.JobPosition, j => j.WorkingTime, j => j.WorkingType);
@@ -74,6 +82,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobAdvert>>(Messages.JobAdvert.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<JobAdvert>> GetAsync(int jobAdvertId)
         {
             var jobAdvert = await _jobAdvertDal.GetAsync(j => j.Id == jobAdvertId);
@@ -96,6 +105,8 @@ namespace Business.Concrete
             return new SuccessResult(Messages.JobAdvert.NotFound(isPlural: false));
         }
 
+        [ValidationAspect(typeof(JobAdvertValidator))]
+        [CacheRemoveAspect("IJobAdvertService.Get")]
         public async Task<IResult> UpdateAsync(JobAdvert jobAdvert, string modifiedByName)
         {
             var oldJobAdvert = await _jobAdvertDal.GetAsync(j => j.Id == jobAdvert.Id);

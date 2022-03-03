@@ -1,5 +1,9 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Performance;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,6 +25,8 @@ namespace Business.Concrete
             _employerDal = employerDal;
         }
 
+        [ValidationAspect(typeof(EmployerValidator))]
+        [CacheRemoveAspect("IEmployerService.Get")]
         public async Task<IResult> AddAsync(Employer employer, string createdByName)
         {
             employer.CreatedByName = createdByName;
@@ -44,6 +50,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.Employer.NotFound(isPlural: false));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<Employer>>> GetAllAsync()
         {
             var employers = await _employerDal.GetAllAsync();
@@ -54,6 +61,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<Employer>>(Messages.Employer.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<Employer>>> GetAllByNonDeletedAndActiveAsync()
         {
             var employers = await _employerDal.GetAllAsync(e => !e.IsDeleted && e.IsActive);
@@ -64,6 +72,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<Employer>>(Messages.Employer.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<Employer>>> GetAllByNonDeletedAsync()
         {
             var employers = await _employerDal.GetAllAsync(e => !e.IsDeleted);
@@ -74,6 +83,8 @@ namespace Business.Concrete
             return new ErrorDataResult<List<Employer>>(Messages.Employer.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
+        [PerformanceAspect(5)]
         public async Task<IDataResult<Employer>> GetAsync(int employerId)
         {
             var employer = await _employerDal.GetAsync(e => e.Id == employerId);
@@ -96,6 +107,8 @@ namespace Business.Concrete
             return new ErrorResult(Messages.Employer.NotFound(isPlural: false));
         }
 
+        [ValidationAspect(typeof(EmployerValidator))]
+        [CacheRemoveAspect("IEmployerService.Get")]
         public async Task<IResult> UpdateAsync(Employer employer, string modifiedByName)
         {
             var oldEmployer = await _employerDal.GetAsync(e => e.Id == employer.Id);

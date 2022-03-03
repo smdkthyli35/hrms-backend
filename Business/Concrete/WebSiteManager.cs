@@ -1,5 +1,8 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,6 +24,8 @@ namespace Business.Concrete
             _webSiteDal = webSiteDal;
         }
 
+        [ValidationAspect(typeof(WebSiteValidator))]
+        [CacheRemoveAspect("IWebSiteService.Get")]
         public async Task<IResult> AddAsync(WebSite webSite, string createdByName)
         {
             webSite.CreatedByName = createdByName;
@@ -96,6 +101,8 @@ namespace Business.Concrete
             return new SuccessResult(Messages.WebSite.NotFound(isPlural: false));
         }
 
+        [ValidationAspect(typeof(WebSiteValidator))]
+        [CacheRemoveAspect("IWebSiteService.Get")]
         public async Task<IResult> UpdateAsync(WebSite webSite, string modifiedByName)
         {
             var oldWebSite = await _webSiteDal.GetAsync(w => w.Id == webSite.Id);

@@ -1,5 +1,8 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,6 +24,8 @@ namespace Business.Concrete
             _jobSeekerCvWebSiteDal = jobSeekerCvWebSiteDal;
         }
 
+        [ValidationAspect(typeof(JobSeekerCvWebSiteValidator))]
+        [CacheRemoveAspect("IJobSeekerCvWebSiteService.Get")]
         public async Task<IResult> AddAsync(JobSeekerCvWebSite jobSeekerCvWebSite, string createdByName)
         {
             jobSeekerCvWebSite.CreatedByName = createdByName;
@@ -96,6 +101,8 @@ namespace Business.Concrete
             return new SuccessResult(Messages.JobSeekerCvWebSite.NotFound(isPlural: false));
         }
 
+        [ValidationAspect(typeof(JobSeekerCvWebSiteValidator))]
+        [CacheRemoveAspect("IJobSeekerCvWebSiteService.Get")]
         public async Task<IResult> UpdateAsync(JobSeekerCvWebSite jobSeekerCvWebSite, string modifiedByName)
         {
             var oldjobSeekerCvWebSite = await _jobSeekerCvWebSiteDal.GetAsync(j => j.Id == jobSeekerCvWebSite.Id);

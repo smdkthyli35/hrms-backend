@@ -1,5 +1,8 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,6 +24,8 @@ namespace Business.Concrete
             _jobSeekerCvSkillDal = jobSeekerCvSkillDal;
         }
 
+        [ValidationAspect(typeof(JobSeekerCvSkillValidator))]
+        [CacheRemoveAspect("IJobSeekerCvSkillService.Get")]
         public async Task<IResult> AddAsync(JobSeekerCvSkill jobSeekerCvSkill, string createdByName)
         {
             jobSeekerCvSkill.CreatedByName = createdByName;
@@ -96,6 +101,8 @@ namespace Business.Concrete
             return new SuccessResult(Messages.JobSeekerCvSkill.NotFound(isPlural: false));
         }
 
+        [ValidationAspect(typeof(JobSeekerCvSkillValidator))]
+        [CacheRemoveAspect("IJobSeekerCvSkillService.Get")]
         public async Task<IResult> UpdateAsync(JobSeekerCvSkill jobSeekerCvSkill, string modifiedByName)
         {
             var oldjobSeekerCvSkill = await _jobSeekerCvSkillDal.GetAsync(j => j.Id == jobSeekerCvSkill.Id);

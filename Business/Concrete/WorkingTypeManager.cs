@@ -1,5 +1,8 @@
 ﻿using Business.Abstract;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,6 +24,8 @@ namespace Business.Concrete
             _workingTypeDal = workingTypeDal;
         }
 
+        [ValidationAspect(typeof(WorkingTypeValidator))]
+        [CacheRemoveAspect("IWorkingTypeService.Get")]
         public async Task<IResult> AddAsync(WorkingType workingType, string createdByName)
         {
             workingType.CreatedByName = createdByName;
@@ -96,6 +101,8 @@ namespace Business.Concrete
             return new SuccessResult(Messages.WorkingType.NotFound(isPlural: false));
         }
 
+        [ValidationAspect(typeof(WorkingTypeValidator))]
+        [CacheRemoveAspect("IWorkingTypeService.Get")]
         public async Task<IResult> UpdateAsync(WorkingType workingType, string modifiedByName)
         {
             var oldWorkingType = await _workingTypeDal.GetAsync(w => w.Id == workingType.Id);
