@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
@@ -24,6 +25,7 @@ namespace Business.Concrete
             _languageDal = languageDal;
         }
 
+        [SecuredOperation("language.add,admin")]
         [ValidationAspect(typeof(LanguageValidator))]
         [CacheRemoveAspect("ILanguageService.Get")]
         public async Task<IResult> AddAsync(Language language, string createdByName)
@@ -49,6 +51,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.Language.NotFound(isPlural: false));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<Language>>> GetAllAsync()
         {
             var languages = await _languageDal.GetAllAsync();
@@ -59,6 +62,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<Language>>(Messages.Language.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<Language>>> GetAllByNonDeletedAndActiveAsync()
         {
             var languages = await _languageDal.GetAllAsync(l => !l.IsDeleted && l.IsActive);
@@ -69,6 +73,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<Language>>(Messages.Language.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<Language>>> GetAllByNonDeletedAsync()
         {
             var languages = await _languageDal.GetAllAsync(l => !l.IsDeleted);
@@ -79,6 +84,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<Language>>(Messages.Language.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<Language>> GetAsync(int languageId)
         {
             var language = await _languageDal.GetAsync(l => l.Id == languageId);
@@ -101,6 +107,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.Language.NotFound(isPlural: false));
         }
 
+        [SecuredOperation("language.update,admin")]
         [ValidationAspect(typeof(LanguageValidator))]
         [CacheRemoveAspect("ILanguageService.Get")]
         public async Task<IResult> UpdateAsync(Language language, string modifiedByName)

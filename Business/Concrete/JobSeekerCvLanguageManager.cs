@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
@@ -24,6 +25,7 @@ namespace Business.Concrete
             _jobSeekerCvLanguageDal = jobSeekerCvLanguageDal;
         }
 
+        [SecuredOperation("jobseekercvlanguage.add,admin")]
         [ValidationAspect(typeof(JobSeekerCvLanguageValidator))]
         [CacheRemoveAspect("IJobSeekerCvLanguageService.Get")]
         public async Task<IResult> AddAsync(JobSeekerCvLanguage jobSeekerCvLanguage, string createdByName)
@@ -49,6 +51,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.JobSeekerCvLanguage.NotFound(isPlural: false));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobSeekerCvLanguage>>> GetAllAsync()
         {
             var jobSeekerCvLanguages = await _jobSeekerCvLanguageDal.GetAllAsync(null, j => j.JobSeekerCv, j => j.Language);
@@ -59,6 +62,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobSeekerCvLanguage>>(Messages.JobSeekerCvLanguage.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobSeekerCvLanguage>>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobSeekerCvLanguages = await _jobSeekerCvLanguageDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.JobSeekerCv, j => j.Language);
@@ -69,6 +73,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobSeekerCvLanguage>>(Messages.JobSeekerCvLanguage.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobSeekerCvLanguage>>> GetAllByNonDeletedAsync()
         {
             var jobSeekerCvLanguages = await _jobSeekerCvLanguageDal.GetAllAsync(j => !j.IsDeleted, j => j.JobSeekerCv, j => j.Language);
@@ -79,6 +84,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobSeekerCvLanguage>>(Messages.JobSeekerCvLanguage.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<JobSeekerCvLanguage>> GetAsync(int jobSeekerCvLanguageId)
         {
             var jobSeekerCvLanguage = await _jobSeekerCvLanguageDal.GetAsync(j => j.Id == jobSeekerCvLanguageId, j => j.JobSeekerCv, j => j.Language);
@@ -101,6 +107,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.JobSeekerCvLanguage.NotFound(isPlural: false));
         }
 
+        [SecuredOperation("jobseekercvlanguage.update,admin")]
         [ValidationAspect(typeof(JobSeekerCvLanguageValidator))]
         [CacheRemoveAspect("IJobSeekerCvLanguageService.Get")]
         public async Task<IResult> UpdateAsync(JobSeekerCvLanguage jobSeekerCvLanguage, string modifiedByName)

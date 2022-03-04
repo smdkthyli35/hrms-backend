@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
@@ -24,6 +25,7 @@ namespace Business.Concrete
             _jobPositionDal = jobPositionDal;
         }
 
+        [SecuredOperation("jobposition.add,admin")]
         [ValidationAspect(typeof(JobPositionValidator))]
         [CacheRemoveAspect("IJobPositionService.Get")]
         public async Task<IResult> AddAsync(JobPosition jobPosition, string createdByName)
@@ -105,6 +107,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.JobPosition.NotFound(isPlural: false));
         }
 
+        [SecuredOperation("jobposition.update,admin")]
         [ValidationAspect(typeof(JobPositionValidator))]
         [CacheRemoveAspect("IJobPositionService.Get")]
         public async Task<IResult> UpdateAsync(JobPosition jobPosition, string modifiedByName)

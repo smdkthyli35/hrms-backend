@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
@@ -24,6 +25,7 @@ namespace Business.Concrete
             _workingTimeDal = workingTimeDal;
         }
 
+        [SecuredOperation("workingtime.add,admin")]
         [ValidationAspect(typeof(WorkingTimeValidator))]
         [CacheRemoveAspect("IWorkingTimeService.Get")]
         public async Task<IResult> AddAsync(WorkingTime workingTime, string createdByName)
@@ -49,6 +51,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.WorkingTime.NotFound(isPlural: false));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<WorkingTime>>> GetAllAsync()
         {
             var workingTimes = await _workingTimeDal.GetAllAsync();
@@ -59,6 +62,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<WorkingTime>>(Messages.WorkingTime.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<WorkingTime>>> GetAllByNonDeletedAndActiveAsync()
         {
             var workingTimes = await _workingTimeDal.GetAllAsync(w => !w.IsDeleted && w.IsActive);
@@ -69,6 +73,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<WorkingTime>>(Messages.WorkingTime.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<WorkingTime>>> GetAllByNonDeletedAsync()
         {
             var workingTimes = await _workingTimeDal.GetAllAsync(w => !w.IsDeleted);
@@ -79,6 +84,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<WorkingTime>>(Messages.WorkingTime.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<WorkingTime>> GetAsync(int workingTimeId)
         {
             var workingTime = await _workingTimeDal.GetAsync(w => w.Id == workingTimeId);
@@ -101,6 +107,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.WorkingTime.NotFound(isPlural: false));
         }
 
+        [SecuredOperation("workingtime.update,admin")]
         [ValidationAspect(typeof(WorkingTimeValidator))]
         [CacheRemoveAspect("IWorkingTimeService.Get")]
         public async Task<IResult> UpdateAsync(WorkingTime workingTime, string modifiedByName)

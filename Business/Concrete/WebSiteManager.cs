@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
@@ -24,6 +25,7 @@ namespace Business.Concrete
             _webSiteDal = webSiteDal;
         }
 
+        [SecuredOperation("website.add,admin")]
         [ValidationAspect(typeof(WebSiteValidator))]
         [CacheRemoveAspect("IWebSiteService.Get")]
         public async Task<IResult> AddAsync(WebSite webSite, string createdByName)
@@ -49,6 +51,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.WebSite.NotFound(isPlural: false));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<WebSite>>> GetAllAsync()
         {
             var webSites = await _webSiteDal.GetAllAsync();
@@ -59,6 +62,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<WebSite>>(Messages.WebSite.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<WebSite>>> GetAllByNonDeletedAndActiveAsync()
         {
             var webSites = await _webSiteDal.GetAllAsync(w => !w.IsDeleted && w.IsActive);
@@ -69,6 +73,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<WebSite>>(Messages.WebSite.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<WebSite>>> GetAllByNonDeletedAsync()
         {
             var webSites = await _webSiteDal.GetAllAsync(w => !w.IsDeleted);
@@ -79,6 +84,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<WebSite>>(Messages.WebSite.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<WebSite>> GetAsync(int webSiteId)
         {
             var webSite = await _webSiteDal.GetAsync(w => w.Id == webSiteId);
@@ -101,6 +107,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.WebSite.NotFound(isPlural: false));
         }
 
+        [SecuredOperation("website.update,admin")]
         [ValidationAspect(typeof(WebSiteValidator))]
         [CacheRemoveAspect("IWebSiteService.Get")]
         public async Task<IResult> UpdateAsync(WebSite webSite, string modifiedByName)

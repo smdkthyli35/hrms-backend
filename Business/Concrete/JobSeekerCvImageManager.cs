@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
@@ -24,6 +25,7 @@ namespace Business.Concrete
             _jobSeekerCvImageDal = jobSeekerCvImageDal;
         }
 
+        [SecuredOperation("jobseekercvimage.add,admin")]
         [ValidationAspect(typeof(JobSeekerCvImageValidator))]
         [CacheRemoveAspect("IJobSeekerCvImageService.Get")]
         public async Task<IResult> AddAsync(JobSeekerCvImage jobSeekerCvImage, string createdByName)
@@ -49,6 +51,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.JobSeekerCvImage.NotFound(isPlural: false));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobSeekerCvImage>>> GetAllAsync()
         {
             var jobSeekerCvImages = await _jobSeekerCvImageDal.GetAllAsync(null, j => j.JobSeekerCv);
@@ -59,6 +62,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobSeekerCvImage>>(Messages.JobSeekerCvImage.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobSeekerCvImage>>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobSeekerCvImages = await _jobSeekerCvImageDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.JobSeekerCv);
@@ -69,6 +73,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobSeekerCvImage>>(Messages.JobSeekerCvImage.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<JobSeekerCvImage>>> GetAllByNonDeletedAsync()
         {
             var jobSeekerCvImages = await _jobSeekerCvImageDal.GetAllAsync(j => !j.IsDeleted, j => j.JobSeekerCv);
@@ -79,6 +84,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<JobSeekerCvImage>>(Messages.JobSeekerCvImage.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<JobSeekerCvImage>> GetAsync(int jobSeekerCvImageId)
         {
             var jobSeekerCvImage = await _jobSeekerCvImageDal.GetAsync(j => j.Id == jobSeekerCvImageId, j => j.JobSeekerCv);
@@ -101,6 +107,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.JobSeekerCvImage.NotFound(isPlural: false));
         }
 
+        [SecuredOperation("jobseekercvimage.update,admin")]
         [ValidationAspect(typeof(JobSeekerCvImageValidator))]
         [CacheRemoveAspect("IJobSeekerCvImageService.Get")]
         public async Task<IResult> UpdateAsync(JobSeekerCvImage jobSeekerCvImage, string modifiedByName)

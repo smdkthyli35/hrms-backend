@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
@@ -25,6 +26,7 @@ namespace Business.Concrete
             _employerDal = employerDal;
         }
 
+        [SecuredOperation("employer.add,admin")]
         [ValidationAspect(typeof(EmployerValidator))]
         [CacheRemoveAspect("IEmployerService.Get")]
         public async Task<IResult> AddAsync(Employer employer, string createdByName)
@@ -107,6 +109,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.Employer.NotFound(isPlural: false));
         }
 
+        [SecuredOperation("employer.update,admin")]
         [ValidationAspect(typeof(EmployerValidator))]
         [CacheRemoveAspect("IEmployerService.Get")]
         public async Task<IResult> UpdateAsync(Employer employer, string modifiedByName)

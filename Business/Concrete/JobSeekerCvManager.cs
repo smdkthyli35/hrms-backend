@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
@@ -24,6 +25,7 @@ namespace Business.Concrete
             _jobSeekerCvDal = jobSeekerCvDal;
         }
 
+        [SecuredOperation("jobseekercv.add,admin")]
         [ValidationAspect(typeof(JobSeekerCvValidator))]
         [CacheRemoveAspect("IJobSeekerCvService.Get")]
         public async Task<IResult> AddAsync(JobSeekerCv jobSeekerCv, string createdByName)
@@ -105,6 +107,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.JobSeekerCv.NotFound(isPlural: false));
         }
 
+        [SecuredOperation("jobseekercv.update,admin")]
         [ValidationAspect(typeof(JobSeekerCvValidator))]
         [CacheRemoveAspect("IJobSeekerCvService.Get")]
         public async Task<IResult> UpdateAsync(JobSeekerCv jobSeekerCv, string modifiedByName)

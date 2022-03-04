@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
@@ -24,6 +25,7 @@ namespace Business.Concrete
             _workingTypeDal = workingTypeDal;
         }
 
+        [SecuredOperation("workingtype.add,admin")]
         [ValidationAspect(typeof(WorkingTypeValidator))]
         [CacheRemoveAspect("IWorkingTypeService.Get")]
         public async Task<IResult> AddAsync(WorkingType workingType, string createdByName)
@@ -49,6 +51,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.WorkingType.NotFound(isPlural: false));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<WorkingType>>> GetAllAsync()
         {
             var workingTypes = await _workingTypeDal.GetAllAsync();
@@ -59,6 +62,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<WorkingType>>(Messages.WorkingType.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<WorkingType>>> GetAllByNonDeletedAndActiveAsync()
         {
             var workingTypes = await _workingTypeDal.GetAllAsync(w => !w.IsDeleted && w.IsActive);
@@ -69,6 +73,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<WorkingType>>(Messages.WorkingType.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<WorkingType>>> GetAllByNonDeletedAsync()
         {
             var workingTypes = await _workingTypeDal.GetAllAsync(w => !w.IsDeleted);
@@ -79,6 +84,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<WorkingType>>(Messages.WorkingType.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<WorkingType>> GetAsync(int workingTypeId)
         {
             var workingType = await _workingTypeDal.GetAsync(w => w.Id == workingTypeId);
@@ -101,6 +107,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.WorkingType.NotFound(isPlural: false));
         }
 
+        [SecuredOperation("workingtype.update,admin")]
         [ValidationAspect(typeof(WorkingTypeValidator))]
         [CacheRemoveAspect("IWorkingTypeService.Get")]
         public async Task<IResult> UpdateAsync(WorkingType workingType, string modifiedByName)

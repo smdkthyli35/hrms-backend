@@ -1,6 +1,8 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
@@ -23,7 +25,9 @@ namespace Business.Concrete
             _cityDal = cityDal;
         }
 
+        [SecuredOperation("city.add,admin")]
         [ValidationAspect(typeof(CityValidator))]
+        [CacheRemoveAspect("ICityService.Get")]
         public async Task<IResult> AddAsync(City city, string createdByName)
         {
             city.CreatedByName = createdByName;
@@ -47,6 +51,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.City.NotFound(isPlural: false));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<City>>> GetAllAsync()
         {
             var cities = await _cityDal.GetAllAsync();
@@ -57,6 +62,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<City>>(Messages.City.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<City>>> GetAllByNonDeletedAndActiveAsync()
         {
             var cities = await _cityDal.GetAllAsync(c => !c.IsDeleted && c.IsActive);
@@ -67,6 +73,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<City>>(Messages.City.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<City>>> GetAllByNonDeletedAsync()
         {
             var cities = await _cityDal.GetAllAsync(c => !c.IsDeleted);
@@ -77,6 +84,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<City>>(Messages.City.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<City>> GetAsync(int cityId)
         {
             var city = await _cityDal.GetAsync(c => c.Id == cityId);
@@ -99,7 +107,9 @@ namespace Business.Concrete
             return new ErrorResult(Messages.City.NotFound(isPlural: false));
         }
 
+        [SecuredOperation("city.update,admin")]
         [ValidationAspect(typeof(CityValidator))]
+        [CacheRemoveAspect("ICityService.Get")]
         public async Task<IResult> UpdateAsync(City city, string modifiedByName)
         {
             var oldCity = await _cityDal.GetAsync(a => a.Id == city.Id);

@@ -1,6 +1,8 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
@@ -23,7 +25,9 @@ namespace Business.Concrete
             _companyStaffDal = companyStaffDal;
         }
 
+        [SecuredOperation("companystaff.add,admin")]
         [ValidationAspect(typeof(CompanyStaffValidator))]
+        [CacheRemoveAspect("ICompanyStaffService.Get")]
         public async Task<IResult> AddAsync(CompanyStaff companyStaff, string createdByName)
         {
             companyStaff.CreatedByName = createdByName;
@@ -47,6 +51,7 @@ namespace Business.Concrete
             return new ErrorResult(Messages.CompanyStaff.NotFound(isPlural: false));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<CompanyStaff>>> GetAllAsync()
         {
             var companyStaffs = await _companyStaffDal.GetAllAsync();
@@ -57,6 +62,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<CompanyStaff>>(Messages.CompanyStaff.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<CompanyStaff>>> GetAllByNonDeletedAndActiveAsync()
         {
             var companyStaffs = await _companyStaffDal.GetAllAsync(c => !c.IsDeleted && c.IsActive);
@@ -67,6 +73,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<CompanyStaff>>(Messages.CompanyStaff.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<List<CompanyStaff>>> GetAllByNonDeletedAsync()
         {
             var companyStaffs = await _companyStaffDal.GetAllAsync(c => !c.IsDeleted);
@@ -77,6 +84,7 @@ namespace Business.Concrete
             return new ErrorDataResult<List<CompanyStaff>>(Messages.CompanyStaff.NotFound(isPlural: true));
         }
 
+        [CacheAspect]
         public async Task<IDataResult<CompanyStaff>> GetAsync(int companyStaffId)
         {
             var companyStaff = await _companyStaffDal.GetAsync(c => c.Id == companyStaffId);
@@ -98,7 +106,8 @@ namespace Business.Concrete
             }
             return new ErrorResult(Messages.CompanyStaff.NotFound(isPlural: false));
         }
-
+        [SecuredOperation("companystaff.update,admin")]
+        [CacheRemoveAspect("ICompanyStaffService.Get")]
         [ValidationAspect(typeof(CompanyStaffValidator))]
         public async Task<IResult> UpdateAsync(CompanyStaff companyStaff, string modifiedByName)
         {

@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
@@ -24,6 +25,7 @@ namespace Business.Concrete
             _userDal = userDal;
         }
 
+        [SecuredOperation("user.add,admin")]
         [ValidationAspect(typeof(UserValidator))]
         [CacheRemoveAspect("IUserService.Get")]
         public async Task AddAsync(User user)
@@ -112,6 +114,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.User.NotFound(isPlural: false));
         }
 
+        [SecuredOperation("user.update,admin")]
         [ValidationAspect(typeof(UserValidator))]
         [CacheRemoveAspect("IUserService.Get")]
         public async Task<IResult> UpdateAsync(User user, string modifiedByName)
