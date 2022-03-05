@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -8,6 +9,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +21,20 @@ namespace Business.Concrete
     public class JobSeekerCvEducationManager : IJobSeekerCvEducationService
     {
         private readonly IJobSeekerCvEducationDal _jobSeekerCvEducationDal;
+        private readonly IMapper _mapper;
 
-        public JobSeekerCvEducationManager(IJobSeekerCvEducationDal jobSeekerCvEducationDal)
+        public JobSeekerCvEducationManager(IJobSeekerCvEducationDal jobSeekerCvEducationDal, IMapper mapper)
         {
             _jobSeekerCvEducationDal = jobSeekerCvEducationDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("jobseekercveducation.add,admin")]
         [ValidationAspect(typeof(JobSeekerCvEducationValidator))]
         [CacheRemoveAspect("IJobSeekerCvEducationService.Get")]
-        public async Task<IResult> AddAsync(JobSeekerCvEducation jobSeekerCvEducation, string createdByName)
+        public async Task<IResult> AddAsync(JobSeekerCvEducationAddDto jobSeekerCvEducationAddDto, string createdByName)
         {
+            var jobSeekerCvEducation = _mapper.Map<JobSeekerCvEducation>(jobSeekerCvEducationAddDto);
             jobSeekerCvEducation.CreatedByName = createdByName;
             jobSeekerCvEducation.ModifiedByName = createdByName;
             await _jobSeekerCvEducationDal.AddAsync(jobSeekerCvEducation);
@@ -52,47 +57,59 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvEducation>>> GetAllAsync()
+        public async Task<IDataResult<JobSeekerCvEducationListDto>> GetAllAsync()
         {
             var jobSeekerCvEducations = await _jobSeekerCvEducationDal.GetAllAsync(null, j => j.JobSeekerCv);
             if (jobSeekerCvEducations.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvEducation>>();
+                return new SuccessDataResult<JobSeekerCvEducationListDto>(new JobSeekerCvEducationListDto
+                {
+                    JobSeekerCvEducations = jobSeekerCvEducations
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvEducation>>(Messages.JobSeekerCvEducation.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvEducationListDto>(Messages.JobSeekerCvEducation.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvEducation>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<JobSeekerCvEducationListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobSeekerCvEducations = await _jobSeekerCvEducationDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.JobSeekerCv, j => j.JobSeekerCv);
             if (jobSeekerCvEducations.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvEducation>>();
+                return new SuccessDataResult<JobSeekerCvEducationListDto>(new JobSeekerCvEducationListDto
+                {
+                    JobSeekerCvEducations = jobSeekerCvEducations
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvEducation>>(Messages.JobSeekerCvEducation.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvEducationListDto>(Messages.JobSeekerCvEducation.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvEducation>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<JobSeekerCvEducationListDto>> GetAllByNonDeletedAsync()
         {
             var jobSeekerCvEducations = await _jobSeekerCvEducationDal.GetAllAsync(j => !j.IsDeleted, j => j.JobSeekerCv, j => j.JobSeekerCv);
             if (jobSeekerCvEducations.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvEducation>>();
+                return new SuccessDataResult<JobSeekerCvEducationListDto>(new JobSeekerCvEducationListDto
+                {
+                    JobSeekerCvEducations = jobSeekerCvEducations
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvEducation>>(Messages.JobSeekerCvEducation.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvEducationListDto>(Messages.JobSeekerCvEducation.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<JobSeekerCvEducation>> GetAsync(int jobSeekerCvEducationId)
+        public async Task<IDataResult<JobSeekerCvEducationDto>> GetAsync(int jobSeekerCvEducationId)
         {
             var jobSeekerCvEducation = await _jobSeekerCvEducationDal.GetAsync(j => j.Id == jobSeekerCvEducationId, j => j.JobSeekerCv);
             if (jobSeekerCvEducation != null)
             {
-                return new SuccessDataResult<JobSeekerCvEducation>();
+                return new SuccessDataResult<JobSeekerCvEducationDto>(new JobSeekerCvEducationDto
+                {
+                    JobSeekerCvEducation = jobSeekerCvEducation
+                });
             }
-            return new ErrorDataResult<JobSeekerCvEducation>();
+            return new ErrorDataResult<JobSeekerCvEducationDto>();
         }
 
         public async Task<IResult> HardDeleteAsync(int jobSeekerCvEducationId)
@@ -110,11 +127,12 @@ namespace Business.Concrete
         [SecuredOperation("jobseekercveducation.update,admin")]
         [ValidationAspect(typeof(JobSeekerCvEducationValidator))]
         [CacheRemoveAspect("IJobSeekerCvEducationService.Get")]
-        public async Task<IResult> UpdateAsync(JobSeekerCvEducation jobSeekerCvEducation, string modifiedByName)
+        public async Task<IResult> UpdateAsync(JobSeekerCvEducationUpdateDto jobSeekerCvEducationUpdateDto, string modifiedByName)
         {
-            var oldjobSeekerCvEducation = await _jobSeekerCvEducationDal.GetAsync(j => j.Id == jobSeekerCvEducation.Id);
-            oldjobSeekerCvEducation.ModifiedByName = modifiedByName;
-            var updatedjobSeekerCvEducation = await _jobSeekerCvEducationDal.UpdateAsync(oldjobSeekerCvEducation);
+            var oldjobSeekerCvEducation = await _jobSeekerCvEducationDal.GetAsync(j => j.Id == jobSeekerCvEducationUpdateDto.Id);
+            var jobSeekerCvEducation = _mapper.Map<JobSeekerCvEducationUpdateDto, JobSeekerCvEducation>(jobSeekerCvEducationUpdateDto, oldjobSeekerCvEducation);
+            jobSeekerCvEducation.ModifiedByName = modifiedByName;
+            await _jobSeekerCvEducationDal.UpdateAsync(jobSeekerCvEducation);
             return new SuccessResult(Messages.JobSeekerCvEducation.jobSeekerCvEducationUpdated);
         }
     }

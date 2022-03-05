@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -8,6 +9,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +21,20 @@ namespace Business.Concrete
     public class JobAdvertManager : IJobAdvertService
     {
         private readonly IJobAdvertDal _jobAdvertDal;
+        private readonly IMapper _mapper;
 
-        public JobAdvertManager(IJobAdvertDal jobAdvertDal)
+        public JobAdvertManager(IJobAdvertDal jobAdvertDal, IMapper mapper)
         {
             _jobAdvertDal = jobAdvertDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("jobadvert.add,admin")]
         [ValidationAspect(typeof(JobAdvertValidator))]
         [CacheRemoveAspect("IJobAdvertService.Get")]
-        public async Task<IResult> AddAsync(JobAdvert jobAdvert, string createdByName)
+        public async Task<IResult> AddAsync(JobAdvertAddDto jobAdvertAddDto, string createdByName)
         {
+            var jobAdvert = _mapper.Map<JobAdvert>(jobAdvertAddDto);
             jobAdvert.CreatedByName = createdByName;
             jobAdvert.ModifiedByName = createdByName;
             await _jobAdvertDal.AddAsync(jobAdvert);
@@ -52,47 +57,59 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobAdvert>>> GetAllAsync()
+        public async Task<IDataResult<JobAdvertListDto>> GetAllAsync()
         {
             var jobAdverts = await _jobAdvertDal.GetAllAsync(null, j => j.City, j => j.Employer, j => j.JobPosition, j => j.WorkingTime, j => j.WorkingType);
             if (jobAdverts.Count > -1)
             {
-                return new SuccessDataResult<List<JobAdvert>>();
+                return new SuccessDataResult<JobAdvertListDto>(new JobAdvertListDto
+                {
+                    JobAdverts = jobAdverts
+                });
             }
-            return new ErrorDataResult<List<JobAdvert>>(Messages.JobAdvert.NotFound(isPlural: true));
+            return new ErrorDataResult<JobAdvertListDto>(Messages.JobAdvert.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobAdvert>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<JobAdvertListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobAdverts = await _jobAdvertDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.City, j => j.Employer, j => j.JobPosition, j => j.WorkingTime, j => j.WorkingType);
             if (jobAdverts.Count > -1)
             {
-                return new SuccessDataResult<List<JobAdvert>>();
+                return new SuccessDataResult<JobAdvertListDto>(new JobAdvertListDto
+                {
+                    JobAdverts = jobAdverts
+                });
             }
-            return new ErrorDataResult<List<JobAdvert>>(Messages.JobAdvert.NotFound(isPlural: true));
+            return new ErrorDataResult<JobAdvertListDto>(Messages.JobAdvert.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobAdvert>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<JobAdvertListDto>> GetAllByNonDeletedAsync()
         {
             var jobAdverts = await _jobAdvertDal.GetAllAsync(j => !j.IsDeleted, j => j.City, j => j.Employer, j => j.JobPosition, j => j.WorkingTime, j => j.WorkingType);
             if (jobAdverts.Count > -1)
             {
-                return new SuccessDataResult<List<JobAdvert>>();
+                return new SuccessDataResult<JobAdvertListDto>(new JobAdvertListDto
+                {
+                    JobAdverts = jobAdverts
+                });
             }
-            return new ErrorDataResult<List<JobAdvert>>(Messages.JobAdvert.NotFound(isPlural: true));
+            return new ErrorDataResult<JobAdvertListDto>(Messages.JobAdvert.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<JobAdvert>> GetAsync(int jobAdvertId)
+        public async Task<IDataResult<JobAdvertDto>> GetAsync(int jobAdvertId)
         {
             var jobAdvert = await _jobAdvertDal.GetAsync(j => j.Id == jobAdvertId);
             if (jobAdvert != null)
             {
-                return new SuccessDataResult<JobAdvert>();
+                return new SuccessDataResult<JobAdvertDto>(new JobAdvertDto
+                {
+                    JobAdvert = jobAdvert
+                });
             }
-            return new ErrorDataResult<JobAdvert>();
+            return new ErrorDataResult<JobAdvertDto>();
         }
 
         public async Task<IResult> HardDeleteAsync(int jobAdvertId)
@@ -110,11 +127,12 @@ namespace Business.Concrete
         [SecuredOperation("jobadvert.update,admin")]
         [ValidationAspect(typeof(JobAdvertValidator))]
         [CacheRemoveAspect("IJobAdvertService.Get")]
-        public async Task<IResult> UpdateAsync(JobAdvert jobAdvert, string modifiedByName)
+        public async Task<IResult> UpdateAsync(JobAdvertUpdateDto jobAdvertUpdateDto, string modifiedByName)
         {
-            var oldJobAdvert = await _jobAdvertDal.GetAsync(j => j.Id == jobAdvert.Id);
-            oldJobAdvert.ModifiedByName = modifiedByName;
-            var updatedJobAdvert = await _jobAdvertDal.UpdateAsync(oldJobAdvert);
+            var oldJobAdvert = await _jobAdvertDal.GetAsync(j => j.Id == jobAdvertUpdateDto.Id);
+            var jobAdvert = _mapper.Map<JobAdvertUpdateDto, JobAdvert>(jobAdvertUpdateDto, oldJobAdvert);
+            jobAdvert.ModifiedByName = modifiedByName;
+            await _jobAdvertDal.UpdateAsync(jobAdvert);
             return new SuccessResult(Messages.JobAdvert.jobAdvertUpdated);
         }
     }

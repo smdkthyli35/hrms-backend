@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -9,6 +10,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,17 +22,20 @@ namespace Business.Concrete
     public class EmployerManager : IEmployerService
     {
         private readonly IEmployerDal _employerDal;
+        private readonly IMapper _mapper;
 
-        public EmployerManager(IEmployerDal employerDal)
+        public EmployerManager(IEmployerDal employerDal, IMapper mapper)
         {
             _employerDal = employerDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("employer.add,admin")]
         [ValidationAspect(typeof(EmployerValidator))]
         [CacheRemoveAspect("IEmployerService.Get")]
-        public async Task<IResult> AddAsync(Employer employer, string createdByName)
+        public async Task<IResult> AddAsync(EmployerAddDto employerAddDto, string createdByName)
         {
+            var employer = _mapper.Map<Employer>(employerAddDto);
             employer.CreatedByName = createdByName;
             employer.ModifiedByName = createdByName;
             await _employerDal.AddAsync(employer);
@@ -53,48 +58,60 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<Employer>>> GetAllAsync()
+        public async Task<IDataResult<EmployerListDto>> GetAllAsync()
         {
             var employers = await _employerDal.GetAllAsync();
             if (employers.Count > -1)
             {
-                return new SuccessDataResult<List<Employer>>();
+                return new SuccessDataResult<EmployerListDto>(new EmployerListDto
+                {
+                    Employers = employers
+                });
             }
-            return new ErrorDataResult<List<Employer>>(Messages.Employer.NotFound(isPlural: true));
+            return new ErrorDataResult<EmployerListDto>(Messages.Employer.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<Employer>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<EmployerListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var employers = await _employerDal.GetAllAsync(e => !e.IsDeleted && e.IsActive);
             if (employers.Count > -1)
             {
-                return new SuccessDataResult<List<Employer>>();
+                return new SuccessDataResult<EmployerListDto>(new EmployerListDto
+                {
+                    Employers = employers
+                });
             }
-            return new ErrorDataResult<List<Employer>>(Messages.Employer.NotFound(isPlural: true));
+            return new ErrorDataResult<EmployerListDto>(Messages.Employer.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<Employer>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<EmployerListDto>> GetAllByNonDeletedAsync()
         {
             var employers = await _employerDal.GetAllAsync(e => !e.IsDeleted);
             if (employers.Count > -1)
             {
-                return new SuccessDataResult<List<Employer>>();
+                return new SuccessDataResult<EmployerListDto>(new EmployerListDto
+                {
+                    Employers = employers
+                });
             }
-            return new ErrorDataResult<List<Employer>>(Messages.Employer.NotFound(isPlural: true));
+            return new ErrorDataResult<EmployerListDto>(Messages.Employer.NotFound(isPlural: true));
         }
 
         [CacheAspect]
         [PerformanceAspect(5)]
-        public async Task<IDataResult<Employer>> GetAsync(int employerId)
+        public async Task<IDataResult<EmployerDto>> GetAsync(int employerId)
         {
             var employer = await _employerDal.GetAsync(e => e.Id == employerId);
             if (employer != null)
             {
-                return new SuccessDataResult<Employer>();
+                return new SuccessDataResult<EmployerDto>(new EmployerDto
+                {
+                    Employer = employer
+                });
             }
-            return new ErrorDataResult<Employer>(Messages.Employer.NotFound(isPlural: true));
+            return new ErrorDataResult<EmployerDto>(Messages.Employer.NotFound(isPlural: true));
         }
 
         public async Task<IResult> HardDeleteAsync(int employerId)
@@ -112,11 +129,12 @@ namespace Business.Concrete
         [SecuredOperation("employer.update,admin")]
         [ValidationAspect(typeof(EmployerValidator))]
         [CacheRemoveAspect("IEmployerService.Get")]
-        public async Task<IResult> UpdateAsync(Employer employer, string modifiedByName)
+        public async Task<IResult> UpdateAsync(EmployerUpdateDto employerUpdateDto, string modifiedByName)
         {
-            var oldEmployer = await _employerDal.GetAsync(e => e.Id == employer.Id);
-            oldEmployer.ModifiedByName = modifiedByName;
-            var updatedEmployer = await _employerDal.UpdateAsync(oldEmployer);
+            var oldEmployer = await _employerDal.GetAsync(e => e.Id == employerUpdateDto.Id);
+            var employer = _mapper.Map<EmployerUpdateDto, Employer>(employerUpdateDto, oldEmployer);
+            employer.ModifiedByName = modifiedByName;
+            var updatedEmployer = await _employerDal.UpdateAsync(employer);
             return new SuccessResult();
         }
     }

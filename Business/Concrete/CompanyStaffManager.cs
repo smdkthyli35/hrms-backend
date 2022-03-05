@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -8,6 +9,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,20 +21,23 @@ namespace Business.Concrete
     public class CompanyStaffManager : ICompanyStaffService
     {
         private readonly ICompanyStaffDal _companyStaffDal;
+        private readonly IMapper _mapper;
 
-        public CompanyStaffManager(ICompanyStaffDal companyStaffDal)
+        public CompanyStaffManager(ICompanyStaffDal companyStaffDal, IMapper mapper)
         {
             _companyStaffDal = companyStaffDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("companystaff.add,admin")]
         [ValidationAspect(typeof(CompanyStaffValidator))]
         [CacheRemoveAspect("ICompanyStaffService.Get")]
-        public async Task<IResult> AddAsync(CompanyStaff companyStaff, string createdByName)
+        public async Task<IResult> AddAsync(CompanyStaffAddDto companyStaffAddDto, string createdByName)
         {
+            var companyStaff = _mapper.Map<CompanyStaff>(companyStaffAddDto);
             companyStaff.CreatedByName = createdByName;
             companyStaff.ModifiedByName = createdByName;
-            var addCompanyStaff = await _companyStaffDal.AddAsync(companyStaff);
+            await _companyStaffDal.AddAsync(companyStaff);
             return new SuccessResult(Messages.CompanyStaff.Add(companyStaff.FirstName, companyStaff.LastName));
         }
 
@@ -52,47 +57,59 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<CompanyStaff>>> GetAllAsync()
+        public async Task<IDataResult<CompanyStaffListDto>> GetAllAsync()
         {
             var companyStaffs = await _companyStaffDal.GetAllAsync();
             if (companyStaffs.Count > -1)
             {
-                return new SuccessDataResult<List<CompanyStaff>>();
+                return new SuccessDataResult<CompanyStaffListDto>(new CompanyStaffListDto
+                {
+                    CompanyStaffs = companyStaffs
+                });
             }
-            return new ErrorDataResult<List<CompanyStaff>>(Messages.CompanyStaff.NotFound(isPlural: true));
+            return new ErrorDataResult<CompanyStaffListDto>(Messages.CompanyStaff.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<CompanyStaff>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<CompanyStaffListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var companyStaffs = await _companyStaffDal.GetAllAsync(c => !c.IsDeleted && c.IsActive);
             if (companyStaffs.Count > -1)
             {
-                return new SuccessDataResult<List<CompanyStaff>>();
+                return new SuccessDataResult<CompanyStaffListDto>(new CompanyStaffListDto
+                {
+                    CompanyStaffs = companyStaffs
+                });
             }
-            return new ErrorDataResult<List<CompanyStaff>>(Messages.CompanyStaff.NotFound(isPlural: true));
+            return new ErrorDataResult<CompanyStaffListDto>(Messages.CompanyStaff.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<CompanyStaff>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<CompanyStaffListDto>> GetAllByNonDeletedAsync()
         {
             var companyStaffs = await _companyStaffDal.GetAllAsync(c => !c.IsDeleted);
             if (companyStaffs.Count > -1)
             {
-                return new SuccessDataResult<List<CompanyStaff>>();
+                return new SuccessDataResult<CompanyStaffListDto>(new CompanyStaffListDto
+                {
+                    CompanyStaffs = companyStaffs
+                });
             }
-            return new ErrorDataResult<List<CompanyStaff>>(Messages.CompanyStaff.NotFound(isPlural: true));
+            return new ErrorDataResult<CompanyStaffListDto>(Messages.CompanyStaff.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<CompanyStaff>> GetAsync(int companyStaffId)
+        public async Task<IDataResult<CompanyStaffDto>> GetAsync(int companyStaffId)
         {
             var companyStaff = await _companyStaffDal.GetAsync(c => c.Id == companyStaffId);
             if (companyStaff != null)
             {
-                return new SuccessDataResult<CompanyStaff>();
+                return new SuccessDataResult<CompanyStaffDto>(new CompanyStaffDto
+                {
+                    CompanyStaff = companyStaff
+                });
             }
-            return new ErrorDataResult<CompanyStaff>(Messages.CompanyStaff.NotFound(isPlural: false));
+            return new ErrorDataResult<CompanyStaffDto>(Messages.CompanyStaff.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int companyStaffId)
@@ -106,14 +123,16 @@ namespace Business.Concrete
             }
             return new ErrorResult(Messages.CompanyStaff.NotFound(isPlural: false));
         }
+
         [SecuredOperation("companystaff.update,admin")]
         [CacheRemoveAspect("ICompanyStaffService.Get")]
         [ValidationAspect(typeof(CompanyStaffValidator))]
-        public async Task<IResult> UpdateAsync(CompanyStaff companyStaff, string modifiedByName)
+        public async Task<IResult> UpdateAsync(CompanyStaffUpdateDto companyStaffUpdateDto, string modifiedByName)
         {
-            var oldCompanyStaff = await _companyStaffDal.GetAsync(a => a.Id == companyStaff.Id);
-            oldCompanyStaff.ModifiedByName = modifiedByName;
-            var updatedCompanyStaff = await _companyStaffDal.UpdateAsync(oldCompanyStaff);
+            var oldCompanyStaff = await _companyStaffDal.GetAsync(a => a.Id == companyStaffUpdateDto.Id);
+            var companyStaff = _mapper.Map<CompanyStaffUpdateDto, CompanyStaff>(companyStaffUpdateDto, oldCompanyStaff);
+            companyStaff.ModifiedByName = modifiedByName;
+            var updatedCompanyStaff = await _companyStaffDal.UpdateAsync(companyStaff);
             return new SuccessResult(Messages.CompanyStaff.Update(updatedCompanyStaff.FirstName, updatedCompanyStaff.LastName));
         }
     }
