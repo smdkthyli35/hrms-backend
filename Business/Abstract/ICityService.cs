@@ -1,4 +1,5 @@
-﻿using Core.Utilities.Results.Abstract;
+﻿using Business.Dtos;
+using Core.Utilities.Results.Abstract;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -10,12 +11,12 @@ namespace Business.Abstract
 {
     public interface ICityService
     {
-        Task<IDataResult<City>> GetAsync(int cityId);
-        Task<IDataResult<List<City>>> GetAllAsync();
-        Task<IDataResult<List<City>>> GetAllByNonDeletedAsync();
-        Task<IDataResult<List<City>>> GetAllByNonDeletedAndActiveAsync();
-        Task<IResult> AddAsync(City city, string createdByName);
-        Task<IResult> UpdateAsync(City city, string modifiedByName);
+        Task<IDataResult<CityDto>> GetAsync(int cityId);
+        Task<IDataResult<CityListDto>> GetAllAsync();
+        Task<IDataResult<CityListDto>> GetAllByNonDeletedAsync();
+        Task<IDataResult<CityListDto>> GetAllByNonDeletedAndActiveAsync();
+        Task<IResult> AddAsync(CityAddDto cityAddDto, string createdByName);
+        Task<IResult> UpdateAsync(CityUpdateDto cityUpdateDto, string modifiedByName);
         Task<IResult> DeleteAsync(int cityId, string modifiedByName);
         Task<IResult> HardDeleteAsync(int cityId);
     }

@@ -1,6 +1,8 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
+using Business.Dtos;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Validation;
@@ -19,17 +21,20 @@ namespace Business.Concrete
     public class CityManager : ICityService
     {
         private readonly ICityDal _cityDal;
+        private readonly IMapper _mapper;
 
-        public CityManager(ICityDal cityDal)
+        public CityManager(ICityDal cityDal, IMapper mapper)
         {
             _cityDal = cityDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("city.add,admin")]
         [ValidationAspect(typeof(CityValidator))]
         [CacheRemoveAspect("ICityService.Get")]
-        public async Task<IResult> AddAsync(City city, string createdByName)
+        public async Task<IResult> AddAsync(CityAddDto cityAddDto, string createdByName)
         {
+            var city = _mapper.Map<City>(cityAddDto);
             city.CreatedByName = createdByName;
             city.ModifiedByName = createdByName;
             var addCity = await _cityDal.AddAsync(city);
@@ -52,47 +57,59 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<City>>> GetAllAsync()
+        public async Task<IDataResult<CityListDto>> GetAllAsync()
         {
             var cities = await _cityDal.GetAllAsync();
             if (cities.Count > -1)
             {
-                return new SuccessDataResult<List<City>>();
+                return new SuccessDataResult<CityListDto>(new CityListDto
+                {
+                    Cities = cities
+                });
             }
-            return new ErrorDataResult<List<City>>(Messages.City.NotFound(isPlural: true));
+            return new ErrorDataResult<CityListDto>(Messages.City.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<City>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<CityListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var cities = await _cityDal.GetAllAsync(c => !c.IsDeleted && c.IsActive);
             if (cities.Count > -1)
             {
-                return new SuccessDataResult<List<City>>();
+                return new SuccessDataResult<CityListDto>(new CityListDto
+                {
+                    Cities = cities
+                });
             }
-            return new ErrorDataResult<List<City>>(Messages.City.NotFound(isPlural: true));
+            return new ErrorDataResult<CityListDto>(Messages.City.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<City>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<CityListDto>> GetAllByNonDeletedAsync()
         {
             var cities = await _cityDal.GetAllAsync(c => !c.IsDeleted);
             if (cities.Count > -1)
             {
-                return new SuccessDataResult<List<City>>();
+                return new SuccessDataResult<CityListDto>(new CityListDto
+                {
+                    Cities = cities
+                });
             }
-            return new ErrorDataResult<List<City>>(Messages.City.NotFound(isPlural: true));
+            return new ErrorDataResult<CityListDto>(Messages.City.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<City>> GetAsync(int cityId)
+        public async Task<IDataResult<CityDto>> GetAsync(int cityId)
         {
             var city = await _cityDal.GetAsync(c => c.Id == cityId);
             if (city != null)
             {
-                return new SuccessDataResult<City>();
+                return new SuccessDataResult<CityDto>(new CityDto
+                {
+                    City = city
+                });
             }
-            return new ErrorDataResult<City>(Messages.City.NotFound(isPlural: false));
+            return new ErrorDataResult<CityDto>(Messages.City.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int cityId)
@@ -110,12 +127,13 @@ namespace Business.Concrete
         [SecuredOperation("city.update,admin")]
         [ValidationAspect(typeof(CityValidator))]
         [CacheRemoveAspect("ICityService.Get")]
-        public async Task<IResult> UpdateAsync(City city, string modifiedByName)
+        public async Task<IResult> UpdateAsync(CityUpdateDto cityUpdateDto, string modifiedByName)
         {
-            var oldCity = await _cityDal.GetAsync(a => a.Id == city.Id);
-            oldCity.ModifiedByName = modifiedByName;
-            var updatedCity = await _cityDal.UpdateAsync(oldCity);
-            return new SuccessResult(Messages.City.Update(updatedCity.Name));
+            var oldCity = await _cityDal.GetAsync(c => c.Id == cityUpdateDto.Id);
+            var city = _mapper.Map<CityUpdateDto, City>(cityUpdateDto, oldCity);
+            city.ModifiedByName = modifiedByName;
+            await _cityDal.UpdateAsync(city);
+            return new SuccessResult(Messages.City.Update(city.Name));
         }
     }
 }
