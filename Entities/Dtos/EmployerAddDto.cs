@@ -14,7 +14,6 @@ namespace Entities.Dtos
         public string WebSite { get; set; }
         public string CorporateEmail { get; set; }
         public string Phone { get; set; }
-        public int UserId { get; set; }
-        public User User { get; set; }
+        public bool IsActive { get; set; }
     }
 }

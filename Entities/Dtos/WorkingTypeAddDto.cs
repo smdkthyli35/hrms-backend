@@ -10,5 +10,6 @@ namespace Entities.Dtos
     public class WorkingTypeAddDto : IDto
     {
         public string Name { get; set; }
+        public bool IsActive { get; set; }
     }
 }

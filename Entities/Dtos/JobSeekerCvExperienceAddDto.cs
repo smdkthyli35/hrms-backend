@@ -19,5 +19,7 @@ namespace Entities.Dtos
 
         public int JobPositionId { get; set; }
         public JobPosition JobPosition { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

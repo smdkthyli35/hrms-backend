@@ -17,5 +17,7 @@ namespace Entities.Dtos
 
         public int LanguageId { get; set; }
         public Language Language { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

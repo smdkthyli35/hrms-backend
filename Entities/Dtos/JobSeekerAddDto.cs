@@ -16,10 +16,9 @@ namespace Entities.Dtos
         public string IdentityNumber { get; set; }
         public DateTime BirthDate { get; set; }
 
-        public int UserId { get; set; }
-        public User User { get; set; }
-
         public int JobSeekerCvId { get; set; }
         public JobSeekerCv JobSeekerCv { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

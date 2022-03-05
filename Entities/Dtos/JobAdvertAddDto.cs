@@ -30,5 +30,7 @@ namespace Entities.Dtos
 
         public short? WorkingTypeId { get; set; }
         public WorkingType WorkingType { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

@@ -16,6 +16,8 @@ namespace Entities.Dtos
         public string LastName { get; set; }
         public string IdentityNumber { get; set; }
         public DateTime BirthDate { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
 
         public int UserId { get; set; }
         public User User { get; set; }

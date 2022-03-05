@@ -10,5 +10,6 @@ namespace Entities.Dtos
     public class LanguageAddDto : IDto
     {
         public string Name { get; set; }
+        public bool IsActive { get; set; }
     }
 }

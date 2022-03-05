@@ -15,6 +15,8 @@ namespace Entities.Dtos
         public string DepartmentName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? GraduationDate { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
 
         public int JobSeekerCvId { get; set; }
         public JobSeekerCv JobSeekerCv { get; set; }

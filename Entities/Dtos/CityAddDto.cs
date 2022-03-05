@@ -10,5 +10,6 @@ namespace Entities.Dtos
     public class CityAddDto : IDto
     {
         public string Name { get; set; }
+        public bool IsActive { get; set; }
     }
 }

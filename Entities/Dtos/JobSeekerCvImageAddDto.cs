@@ -14,5 +14,7 @@ namespace Entities.Dtos
 
         public int JobSeekerCvId { get; set; }
         public JobSeekerCv JobSeekerCv { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

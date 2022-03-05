@@ -10,5 +10,6 @@ namespace Entities.Dtos
     public class JobPositionAddDto : IDto
     {
         public string Title { get; set; }
+        public bool IsActive { get; set; }
     }
 }

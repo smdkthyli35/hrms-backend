@@ -16,6 +16,8 @@ namespace Entities.Dtos
         public int? MaxSalary { get; set; }
         public int NumberOfOpenPositions { get; set; }
         public DateTime? ApplicationDeadline { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
 
         public int CityId { get; set; }
         public City City { get; set; }

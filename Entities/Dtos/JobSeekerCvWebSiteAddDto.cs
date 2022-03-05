@@ -17,5 +17,7 @@ namespace Entities.Dtos
 
         public short WebSiteId { get; set; }
         public WebSite WebSite { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

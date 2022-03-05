@@ -12,6 +12,8 @@ namespace Entities.Dtos
     {
         public int Id { get; set; }
         public string Address { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
 
         public int JobSeekerCvId { get; set; }
         public JobSeekerCv JobSeekerCv { get; set; }

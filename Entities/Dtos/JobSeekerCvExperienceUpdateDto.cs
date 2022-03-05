@@ -14,6 +14,8 @@ namespace Entities.Dtos
         public string WorkplaceName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? QuitDate { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
 
         public int JobSeekerCvId { get; set; }
         public JobSeekerCv JobSeekerCv { get; set; }

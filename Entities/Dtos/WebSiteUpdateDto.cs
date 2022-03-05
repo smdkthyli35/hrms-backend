@@ -11,5 +11,7 @@ namespace Entities.Dtos
     {
         public short Id { get; set; }
         public string Name { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

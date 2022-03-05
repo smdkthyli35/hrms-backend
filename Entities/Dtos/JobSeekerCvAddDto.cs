@@ -14,5 +14,7 @@ namespace Entities.Dtos
 
         public int? JobSeekerId { get; set; }
         public JobSeeker JobSeeker { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }
