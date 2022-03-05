@@ -1,6 +1,6 @@
 ﻿using Business.Abstract;
-using Business.Dtos;
 using Entities.Concrete;
+using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;

@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Dtos
+namespace Entities.Dtos
 {
-    public class CityListDto : IDto
+    public class JobSeekerCvDto : IDto
     {
-        public IList<City> Cities { get; set; }
+        public JobSeekerCv JobSeekerCv { get; set; }
     }
 }

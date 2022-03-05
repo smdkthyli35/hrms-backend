@@ -1,14 +1,15 @@
 ﻿using Core.Entities.Abstract;
+using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Dtos
+namespace Entities.Dtos
 {
-    public class CityAddDto : IDto
+    public class CityDto : IDto
     {
-        public string Name { get; set; }
+        public City City { get; set; }
     }
 }
