@@ -1,5 +1,6 @@
 ﻿using Core.Utilities.Results.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,12 @@ namespace Business.Abstract
 {
     public interface IWorkingTypeService
     {
-        Task<IDataResult<WorkingType>> GetAsync(int workingTypeId);
-        Task<IDataResult<List<WorkingType>>> GetAllAsync();
-        Task<IDataResult<List<WorkingType>>> GetAllByNonDeletedAsync();
-        Task<IDataResult<List<WorkingType>>> GetAllByNonDeletedAndActiveAsync();
-        Task<IResult> AddAsync(WorkingType workingType, string createdByName);
-        Task<IResult> UpdateAsync(WorkingType workingType, string modifiedByName);
+        Task<IDataResult<WorkingTypeDto>> GetAsync(int workingTypeId);
+        Task<IDataResult<WorkingTypeListDto>> GetAllAsync();
+        Task<IDataResult<WorkingTypeListDto>> GetAllByNonDeletedAsync();
+        Task<IDataResult<WorkingTypeListDto>> GetAllByNonDeletedAndActiveAsync();
+        Task<IResult> AddAsync(WorkingTypeAddDto workingTypeAddDto, string createdByName);
+        Task<IResult> UpdateAsync(WorkingTypeUpdateDto workingTypeUpdateDto, string modifiedByName);
         Task<IResult> DeleteAsync(int workingTypeId, string modifiedByName);
         Task<IResult> HardDeleteAsync(int workingTypeId);
     }

@@ -1,5 +1,6 @@
 ﻿using Core.Utilities.Results.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,12 @@ namespace Business.Abstract
 {
     public interface IWebSiteService
     {
-        Task<IDataResult<WebSite>> GetAsync(int webSiteId);
-        Task<IDataResult<List<WebSite>>> GetAllAsync();
-        Task<IDataResult<List<WebSite>>> GetAllByNonDeletedAsync();
-        Task<IDataResult<List<WebSite>>> GetAllByNonDeletedAndActiveAsync();
-        Task<IResult> AddAsync(WebSite webSite, string createdByName);
-        Task<IResult> UpdateAsync(WebSite webSite, string modifiedByName);
+        Task<IDataResult<WebSiteDto>> GetAsync(int webSiteId);
+        Task<IDataResult<WebSiteListDto>> GetAllAsync();
+        Task<IDataResult<WebSiteListDto>> GetAllByNonDeletedAsync();
+        Task<IDataResult<WebSiteListDto>> GetAllByNonDeletedAndActiveAsync();
+        Task<IResult> AddAsync(WebSiteAddDto webSiteAddDto, string createdByName);
+        Task<IResult> UpdateAsync(WebSiteUpdateDto webSiteUpdateDto, string modifiedByName);
         Task<IResult> DeleteAsync(int webSiteId, string modifiedByName);
         Task<IResult> HardDeleteAsync(int webSiteId);
     }

@@ -1,5 +1,6 @@
 ﻿using Core.Utilities.Results.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,12 @@ namespace Business.Abstract
 {
     public interface IJobSeekerCvExperienceService
     {
-        Task<IDataResult<JobSeekerCvExperience>> GetAsync(int jobSeekerCvExperienceId);
-        Task<IDataResult<List<JobSeekerCvExperience>>> GetAllAsync();
-        Task<IDataResult<List<JobSeekerCvExperience>>> GetAllByNonDeletedAsync();
-        Task<IDataResult<List<JobSeekerCvExperience>>> GetAllByNonDeletedAndActiveAsync();
-        Task<IResult> AddAsync(JobSeekerCvExperience jobSeekerCvExperience, string createdByName);
-        Task<IResult> UpdateAsync(JobSeekerCvExperience jobSeekerCvExperience, string modifiedByName);
+        Task<IDataResult<JobSeekerCvExperienceDto>> GetAsync(int jobSeekerCvExperienceId);
+        Task<IDataResult<JobSeekerCvExperienceListDto>> GetAllAsync();
+        Task<IDataResult<JobSeekerCvExperienceListDto>> GetAllByNonDeletedAsync();
+        Task<IDataResult<JobSeekerCvExperienceListDto>> GetAllByNonDeletedAndActiveAsync();
+        Task<IResult> AddAsync(JobSeekerCvExperienceAddDto jobSeekerCvExperienceAddDto, string createdByName);
+        Task<IResult> UpdateAsync(JobSeekerCvExperienceUpdateDto jobSeekerCvExperienceUpdateDto, string modifiedByName);
         Task<IResult> DeleteAsync(int jobSeekerCvExperienceId, string modifiedByName);
         Task<IResult> HardDeleteAsync(int jobSeekerCvExperienceId);
     }

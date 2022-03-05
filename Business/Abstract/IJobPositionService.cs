@@ -1,5 +1,6 @@
 ﻿using Core.Utilities.Results.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,12 @@ namespace Business.Abstract
 {
     public interface IJobPositionService
     {
-        Task<IDataResult<JobPosition>> GetAsync(int jobPositionId);
-        Task<IDataResult<List<JobPosition>>> GetAllAsync();
-        Task<IDataResult<List<JobPosition>>> GetAllByNonDeletedAsync();
-        Task<IDataResult<List<JobPosition>>> GetAllByNonDeletedAndActiveAsync();
-        Task<IResult> AddAsync(JobPosition jobPosition, string createdByName);
-        Task<IResult> UpdateAsync(JobPosition jobPosition, string modifiedByName);
+        Task<IDataResult<JobPositionDto>> GetAsync(int jobPositionId);
+        Task<IDataResult<JobPositionListDto>> GetAllAsync();
+        Task<IDataResult<JobPositionListDto>> GetAllByNonDeletedAsync();
+        Task<IDataResult<JobPositionListDto>> GetAllByNonDeletedAndActiveAsync();
+        Task<IResult> AddAsync(JobPositionAddDto jobPositionAddDto, string createdByName);
+        Task<IResult> UpdateAsync(JobPositionUpdateDto jobPositionUpdateDto, string modifiedByName);
         Task<IResult> DeleteAsync(int jobPositionId, string modifiedByName);
         Task<IResult> HardDeleteAsync(int jobPositionId);
     }

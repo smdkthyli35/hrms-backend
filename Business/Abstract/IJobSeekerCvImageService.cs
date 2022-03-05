@@ -1,5 +1,6 @@
 ﻿using Core.Utilities.Results.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,12 @@ namespace Business.Abstract
 {
     public interface IJobSeekerCvImageService
     {
-        Task<IDataResult<JobSeekerCvImage>> GetAsync(int jobSeekerCvImageId);
-        Task<IDataResult<List<JobSeekerCvImage>>> GetAllAsync();
-        Task<IDataResult<List<JobSeekerCvImage>>> GetAllByNonDeletedAsync();
-        Task<IDataResult<List<JobSeekerCvImage>>> GetAllByNonDeletedAndActiveAsync();
-        Task<IResult> AddAsync(JobSeekerCvImage jobSeekerCvImage, string createdByName);
-        Task<IResult> UpdateAsync(JobSeekerCvImage jobSeekerCvImage, string modifiedByName);
+        Task<IDataResult<JobSeekerCvImageDto>> GetAsync(int jobSeekerCvImageId);
+        Task<IDataResult<JobSeekerCvImageListDto>> GetAllAsync();
+        Task<IDataResult<JobSeekerCvImageListDto>> GetAllByNonDeletedAsync();
+        Task<IDataResult<JobSeekerCvImageListDto>> GetAllByNonDeletedAndActiveAsync();
+        Task<IResult> AddAsync(JobSeekerCvImageAddDto jobSeekerCvImageAddDto, string createdByName);
+        Task<IResult> UpdateAsync(JobSeekerCvImageUpdateDto jobSeekerCvImageUpdateDto, string modifiedByName);
         Task<IResult> DeleteAsync(int jobSeekerCvImageId, string modifiedByName);
         Task<IResult> HardDeleteAsync(int jobSeekerCvImageId);
     }

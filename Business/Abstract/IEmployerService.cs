@@ -1,5 +1,6 @@
 ﻿using Core.Utilities.Results.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,12 @@ namespace Business.Abstract
 {
     public interface IEmployerService
     {
-        Task<IDataResult<Employer>> GetAsync(int employerId);
-        Task<IDataResult<List<Employer>>> GetAllAsync();
-        Task<IDataResult<List<Employer>>> GetAllByNonDeletedAsync();
-        Task<IDataResult<List<Employer>>> GetAllByNonDeletedAndActiveAsync();
-        Task<IResult> AddAsync(Employer employer, string createdByName);
-        Task<IResult> UpdateAsync(Employer employer, string modifiedByName);
+        Task<IDataResult<EmployerDto>> GetAsync(int employerId);
+        Task<IDataResult<EmployerListDto>> GetAllAsync();
+        Task<IDataResult<EmployerListDto>> GetAllByNonDeletedAsync();
+        Task<IDataResult<EmployerListDto>> GetAllByNonDeletedAndActiveAsync();
+        Task<IResult> AddAsync(EmployerAddDto employerAddDto, string createdByName);
+        Task<IResult> UpdateAsync(EmployerUpdateDto employerUpdateDto, string modifiedByName);
         Task<IResult> DeleteAsync(int employerId, string modifiedByName);
         Task<IResult> HardDeleteAsync(int employerId);
     }
