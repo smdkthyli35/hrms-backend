@@ -112,6 +112,19 @@ namespace Business.Concrete
             return new ErrorDataResult<JobPositionDto>(Messages.JobPosition.NotFound(isPlural: false));
         }
 
+        public async Task<IDataResult<JobPositionDto>> GetByTitleAsync(string title)
+        {
+            var jobPosition = await _jobPositionDal.GetByTitle(title);
+            if (jobPosition != null)
+            {
+                return new SuccessDataResult<JobPositionDto>(new JobPositionDto
+                {
+                    JobPosition = jobPosition
+                });
+            }
+            return new ErrorDataResult<JobPositionDto>(Messages.JobPosition.NotFound(isPlural: false));
+        }
+
         public async Task<IResult> HardDeleteAsync(int jobPositionId)
         {
             var result = await _jobPositionDal.AnyAsync(j => j.Id == jobPositionId);

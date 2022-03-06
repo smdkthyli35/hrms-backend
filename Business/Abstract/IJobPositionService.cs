@@ -12,6 +12,7 @@ namespace Business.Abstract
     public interface IJobPositionService
     {
         Task<IDataResult<JobPositionDto>> GetAsync(int jobPositionId);
+        Task<IDataResult<JobPositionDto>> GetByTitleAsync(string title);
         Task<IDataResult<JobPositionListDto>> GetAllAsync();
         Task<IDataResult<JobPositionListDto>> GetAllByNonDeletedAsync();
         Task<IDataResult<JobPositionListDto>> GetAllByNonDeletedAndActiveAsync();

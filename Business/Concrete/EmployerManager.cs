@@ -114,6 +114,19 @@ namespace Business.Concrete
             return new ErrorDataResult<EmployerDto>(Messages.Employer.NotFound(isPlural: false));
         }
 
+        public async Task<IDataResult<EmployerDto>> GetByCorporateEmailAsync(string corporateEmail)
+        {
+            var employer = await _employerDal.GetByCorporateEmail(corporateEmail);
+            if (employer != null)
+            {
+                return new SuccessDataResult<EmployerDto>(new EmployerDto
+                {
+                    Employer = employer
+                });
+            }
+            return new ErrorDataResult<EmployerDto>(Messages.Employer.NotFound(isPlural: false));
+        }
+
         public async Task<IResult> HardDeleteAsync(int employerId)
         {
             var result = await _employerDal.AnyAsync(e => e.Id == employerId);

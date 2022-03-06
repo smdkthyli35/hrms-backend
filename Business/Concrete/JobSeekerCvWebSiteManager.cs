@@ -112,6 +112,19 @@ namespace Business.Concrete
             return new ErrorDataResult<JobSeekerCvWebSiteDto>(Messages.JobSeekerCvWebSite.NotFound(isPlural: false));
         }
 
+        public async Task<IDataResult<JobSeekerCvWebSiteListDto>> GetListByJobSeekerCvAsync(int jobSeekerCvId)
+        {
+            var jobSeekerCvWebSites = await _jobSeekerCvWebSiteDal.GetListByJobSeekerCvId(jobSeekerCvId);
+            if (jobSeekerCvWebSites.Count > -1)
+            {
+                return new SuccessDataResult<JobSeekerCvWebSiteListDto>(new JobSeekerCvWebSiteListDto
+                {
+                    JobSeekerCvWebSites = jobSeekerCvWebSites
+                });
+            }
+            return new ErrorDataResult<JobSeekerCvWebSiteListDto>(Messages.JobSeekerCvWebSite.NotFound(isPlural: true));
+        }
+
         public async Task<IResult> HardDeleteAsync(int jobSeekerCvWebSiteId)
         {
             var result = await _jobSeekerCvWebSiteDal.AnyAsync(j => j.Id == jobSeekerCvWebSiteId);

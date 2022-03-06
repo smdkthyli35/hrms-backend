@@ -112,6 +112,19 @@ namespace Business.Concrete
             return new ErrorDataResult<JobSeekerDto>(Messages.JobSeeker.NotFound(isPlural: false));
         }
 
+        public async Task<IDataResult<JobSeekerDto>> GetByIdentityNumberAsync(string identityNumber)
+        {
+            var jobSeeker = await _jobSeekerDal.GetByIdentityNumber(identityNumber);
+            if (jobSeeker != null)
+            {
+                return new SuccessDataResult<JobSeekerDto>(new JobSeekerDto
+                {
+                    JobSeeker = jobSeeker
+                });
+            }
+            return new ErrorDataResult<JobSeekerDto>(Messages.JobSeeker.NotFound(isPlural: false));
+        }
+
         public async Task<IResult> HardDeleteAsync(int jobSeekerId)
         {
             var result = await _jobSeekerDal.AnyAsync(j => j.Id == jobSeekerId);

@@ -12,6 +12,7 @@ namespace Business.Abstract
     public interface IJobSeekerCvService
     {
         Task<IDataResult<JobSeekerCvDto>> GetAsync(int jobSeekerCvId);
+        Task<IDataResult<JobSeekerCvDto>> GetByJobSeekerAsync(int jobSeekerId);
         Task<IDataResult<JobSeekerCvListDto>> GetAllAsync();
         Task<IDataResult<JobSeekerCvListDto>> GetAllByNonDeletedAsync();
         Task<IDataResult<JobSeekerCvListDto>> GetAllByNonDeletedAndActiveAsync();

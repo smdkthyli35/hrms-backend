@@ -12,6 +12,7 @@ namespace Business.Abstract
     public interface IWebSiteService
     {
         Task<IDataResult<WebSiteDto>> GetAsync(int webSiteId);
+        Task<IDataResult<WebSiteDto>> GetByNameAsync(string name);
         Task<IDataResult<WebSiteListDto>> GetAllAsync();
         Task<IDataResult<WebSiteListDto>> GetAllByNonDeletedAsync();
         Task<IDataResult<WebSiteListDto>> GetAllByNonDeletedAndActiveAsync();

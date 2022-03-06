@@ -12,6 +12,7 @@ namespace Business.Abstract
     public interface IEmployerService
     {
         Task<IDataResult<EmployerDto>> GetAsync(int employerId);
+        Task<IDataResult<EmployerDto>> GetByCorporateEmailAsync(string corporateEmail);
         Task<IDataResult<EmployerListDto>> GetAllAsync();
         Task<IDataResult<EmployerListDto>> GetAllByNonDeletedAsync();
         Task<IDataResult<EmployerListDto>> GetAllByNonDeletedAndActiveAsync();

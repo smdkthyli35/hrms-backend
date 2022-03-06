@@ -112,24 +112,30 @@ namespace Business.Concrete
             return new ErrorDataResult<CityDto>(Messages.City.NotFound(isPlural: false));
         }
 
-        public async Task<IDataResult<CityDto>> GetByName(string name)
+        public async Task<IDataResult<CityDto>> GetByNameAsync(string name)
         {
-            var result = await _cityDal.GetByName(name);
-            if (result != null)
+            var city = await _cityDal.GetByName(name);
+            if (city != null)
             {
-                return new SuccessDataResult<CityDto>();
+                return new SuccessDataResult<CityDto>(new CityDto
+                {
+                    City = city
+                });
             }
-            return new ErrorDataResult<CityDto>();
+            return new ErrorDataResult<CityDto>(Messages.City.NotFound(isPlural: false));
         }
 
-        public async Task<IDataResult<CityListDto>> GetByNameContains(string name)
+        public async Task<IDataResult<CityListDto>> GetByNameContainsAsync(string name)
         {
-            var result = await _cityDal.GetByNameContains(name);
-            if (result.Count > -1)
+            var cities = await _cityDal.GetByNameContains(name);
+            if (cities.Count > -1)
             {
-                return new SuccessDataResult<CityListDto>();
+                return new SuccessDataResult<CityListDto>(new CityListDto
+                {
+                    Cities = cities
+                });
             }
-            return new ErrorDataResult<CityListDto>();
+            return new ErrorDataResult<CityListDto>(Messages.City.NotFound(isPlural: true));
         }
 
         public async Task<IResult> HardDeleteAsync(int cityId)

@@ -112,6 +112,19 @@ namespace Business.Concrete
             return new ErrorDataResult<WebSiteDto>(Messages.WebSite.NotFound(isPlural: false));
         }
 
+        public async Task<IDataResult<WebSiteDto>> GetByNameAsync(string name)
+        {
+            var webSite = await _webSiteDal.GetByName(name);
+            if (webSite != null)
+            {
+                return new SuccessDataResult<WebSiteDto>(new WebSiteDto
+                {
+                    WebSite = webSite
+                });
+            }
+            return new ErrorDataResult<WebSiteDto>(Messages.WebSite.NotFound(isPlural: false));
+        }
+
         public async Task<IResult> HardDeleteAsync(int webSiteId)
         {
             var result = await _webSiteDal.AnyAsync(w => w.Id == webSiteId);
