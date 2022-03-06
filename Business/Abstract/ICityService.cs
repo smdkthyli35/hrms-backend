@@ -12,6 +12,8 @@ namespace Business.Abstract
     public interface ICityService
     {
         Task<IDataResult<CityDto>> GetAsync(int cityId);
+        Task<IDataResult<CityDto>> GetByName(string name);
+        Task<IDataResult<CityListDto>> GetByNameContains(string name);
         Task<IDataResult<CityListDto>> GetAllAsync();
         Task<IDataResult<CityListDto>> GetAllByNonDeletedAsync();
         Task<IDataResult<CityListDto>> GetAllByNonDeletedAndActiveAsync();

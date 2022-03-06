@@ -112,6 +112,26 @@ namespace Business.Concrete
             return new ErrorDataResult<CityDto>(Messages.City.NotFound(isPlural: false));
         }
 
+        public async Task<IDataResult<CityDto>> GetByName(string name)
+        {
+            var result = await _cityDal.GetByName(name);
+            if (result != null)
+            {
+                return new SuccessDataResult<CityDto>();
+            }
+            return new ErrorDataResult<CityDto>();
+        }
+
+        public async Task<IDataResult<CityListDto>> GetByNameContains(string name)
+        {
+            var result = await _cityDal.GetByNameContains(name);
+            if (result.Count > -1)
+            {
+                return new SuccessDataResult<CityListDto>();
+            }
+            return new ErrorDataResult<CityListDto>();
+        }
+
         public async Task<IResult> HardDeleteAsync(int cityId)
         {
             var result = await _cityDal.AnyAsync(c => c.Id == cityId);
