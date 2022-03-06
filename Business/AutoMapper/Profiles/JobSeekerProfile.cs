@@ -16,7 +16,6 @@ namespace Business.AutoMapper.Profiles
             CreateMap<JobSeekerAddDto, JobSeeker>()
                 .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(x => DateTime.Now))
                 .ForMember(dest => dest.JobSeekerCvId, opt => opt.MapFrom(x => x.JobSeekerCv.Id))
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(x => x.User.Id))
                 .ReverseMap();
 
             CreateMap<JobSeekerUpdateDto, JobSeeker>()

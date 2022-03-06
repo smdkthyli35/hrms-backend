@@ -19,15 +19,19 @@ namespace DataAccess.Concrete.EntityFramework.Repositories
 
         public async Task<List<OperationClaim>> GetClaims(User user)
         {
-            using (var context = new HrmsContext())
-            {
-                var result = from operationClaim in context.OperationClaims
-                             join userOperationClaim in context.UserOperationClaims
-                                 on operationClaim.Id equals userOperationClaim.OperationClaimId
-                             where userOperationClaim.UserId == user.Id
-                             select new OperationClaim { Id = operationClaim.Id, Name = operationClaim.Name };
-                return await result.ToListAsync();
+            var result = from operationClaim in HrmsContext.OperationClaims
+                         join userOperationClaim in HrmsContext.UserOperationClaims
+                             on operationClaim.Id equals userOperationClaim.OperationClaimId
+                         where userOperationClaim.UserId == user.Id
+                         select new OperationClaim { Id = operationClaim.Id, Name = operationClaim.Name };
+            return await result.ToListAsync();
+        }
 
+        public HrmsContext HrmsContext
+        {
+            get
+            {
+                return _context as HrmsContext;
             }
         }
     }

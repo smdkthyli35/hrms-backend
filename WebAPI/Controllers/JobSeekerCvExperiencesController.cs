@@ -55,9 +55,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("update")]
-        public async Task<IActionResult> Update(JobSeekerCvExperience jobSeekerCvExperience)
+        public async Task<IActionResult> Update(JobSeekerCvExperienceUpdateDto jobSeekerCvExperienceUpdateDto)
         {
-            var result = await _jobSeekerCvExperienceService.UpdateAsync(jobSeekerCvExperience, "Samed Kütahyalı");
+            var result = await _jobSeekerCvExperienceService.UpdateAsync(jobSeekerCvExperienceUpdateDto, "Samed Kütahyalı");
             if (result.Success)
             {
                 return Ok(result);

@@ -15,7 +15,7 @@ namespace Business.AutoMapper.Profiles
         {
             CreateMap<CompanyStaffAddDto, CompanyStaff>()
                 .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(x => DateTime.Now))
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(x => x.User.Id)).ReverseMap();
+                .ReverseMap();
 
             CreateMap<CompanyStaffUpdateDto, CompanyStaff>()
                 .ForMember(dest => dest.ModifiedDate, opt => opt.MapFrom(x => DateTime.Now))
