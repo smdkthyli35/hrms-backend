@@ -1,5 +1,6 @@
 ﻿using Core.DataAccess.EntityFramework;
 using DataAccess.Abstract;
+using DataAccess.Concrete.EntityFramework.Contexts;
 using Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,6 +15,19 @@ namespace DataAccess.Concrete.EntityFramework.Repositories
     {
         public EfJobSeekerCvImageDal(DbContext context) : base(context)
         {
+        }
+
+        public async Task<List<JobSeekerCvImage>> GetListByJobSeekerCvId(int jobSeekerCvId)
+        {
+            return await HrmsContext.JobSeekerCvImages.Where(j => j.JobSeekerCvId == jobSeekerCvId).ToListAsync();
+        }
+
+        private HrmsContext HrmsContext
+        {
+            get
+            {
+                return _context as HrmsContext;
+            }
         }
     }
 }
