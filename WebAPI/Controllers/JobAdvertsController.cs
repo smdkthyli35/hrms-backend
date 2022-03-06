@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -43,9 +44,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> Add(JobAdvert jobAdvert)
+        public async Task<IActionResult> Add(JobAdvertAddDto jobAdvertAddDto)
         {
-            var result = await _jobAdvertService.AddAsync(jobAdvert, "Samed Kütahyalı");
+            var result = await _jobAdvertService.AddAsync(jobAdvertAddDto, "Samed Kütahyalı");
             if (result.Success)
             {
                 return Ok(result);
@@ -54,9 +55,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("update")]
-        public async Task<IActionResult> Update(JobAdvert jobAdvert)
+        public async Task<IActionResult> Update(JobAdvertUpdateDto jobAdvertUpdateDto)
         {
-            var result = await _jobAdvertService.UpdateAsync(jobAdvert, "Samed Kütahyalı");
+            var result = await _jobAdvertService.UpdateAsync(jobAdvertUpdateDto, "Samed Kütahyalı");
             if (result.Success)
             {
                 return Ok(result);

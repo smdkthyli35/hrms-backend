@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -43,9 +44,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> Add(WorkingType workingType)
+        public async Task<IActionResult> Add(WorkingTypeAddDto workingTypeAddDto)
         {
-            var result = await _workingTypeService.AddAsync(workingType, "Samed Kütahyalı");
+            var result = await _workingTypeService.AddAsync(workingTypeAddDto, "Samed Kütahyalı");
             if (result.Success)
             {
                 return Ok(result);
@@ -54,9 +55,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("update")]
-        public async Task<IActionResult> Update(WorkingType workingType)
+        public async Task<IActionResult> Update(WorkingTypeUpdateDto workingTypeUpdateDto)
         {
-            var result = await _workingTypeService.UpdateAsync(workingType, "Samed Kütahyalı");
+            var result = await _workingTypeService.UpdateAsync(workingTypeUpdateDto, "Samed Kütahyalı");
             if (result.Success)
             {
                 return Ok(result);

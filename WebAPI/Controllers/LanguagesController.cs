@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -43,9 +44,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> Add(Language language)
+        public async Task<IActionResult> Add(LanguageAddDto languageAddDto)
         {
-            var result = await _languageService.AddAsync(language, "Samed Kütahyalı");
+            var result = await _languageService.AddAsync(languageAddDto, "Samed Kütahyalı");
             if (result.Success)
             {
                 return Ok(result);
@@ -54,9 +55,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("update")]
-        public async Task<IActionResult> Update(Language language)
+        public async Task<IActionResult> Update(LanguageUpdateDto languageUpdateDto)
         {
-            var result = await _languageService.UpdateAsync(language, "Samed Kütahyalı");
+            var result = await _languageService.UpdateAsync(languageUpdateDto, "Samed Kütahyalı");
             if (result.Success)
             {
                 return Ok(result);

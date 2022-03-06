@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -43,9 +44,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> Add(JobSeekerCvExperience jobSeekerCvExperience)
+        public async Task<IActionResult> Add(JobSeekerCvExperienceAddDto jobSeekerCvExperienceAddDto)
         {
-            var result = await _jobSeekerCvExperienceService.AddAsync(jobSeekerCvExperience, "Samed Kütahyalı");
+            var result = await _jobSeekerCvExperienceService.AddAsync(jobSeekerCvExperienceAddDto, "Samed Kütahyalı");
             if (result.Success)
             {
                 return Ok(result);

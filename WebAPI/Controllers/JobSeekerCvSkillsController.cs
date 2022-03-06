@@ -1,5 +1,6 @@
 ﻿using Business.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -43,9 +44,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> Add(JobSeekerCvSkill jobSeekerCvSkill)
+        public async Task<IActionResult> Add(JobSeekerCvSkillAddDto jobSeekerCvSkillAddDto)
         {
-            var result = await _jobSeekerCvSkillService.AddAsync(jobSeekerCvSkill, "Samed Kütahyalı");
+            var result = await _jobSeekerCvSkillService.AddAsync(jobSeekerCvSkillAddDto, "Samed Kütahyalı");
             if (result.Success)
             {
                 return Ok(result);
@@ -54,9 +55,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("update")]
-        public async Task<IActionResult> Update(JobSeekerCvSkill jobSeekerCvSkill)
+        public async Task<IActionResult> Update(JobSeekerCvSkillUpdateDto jobSeekerCvSkillUpdateDto)
         {
-            var result = await _jobSeekerCvSkillService.UpdateAsync(jobSeekerCvSkill, "Samed Kütahyalı");
+            var result = await _jobSeekerCvSkillService.UpdateAsync(jobSeekerCvSkillUpdateDto, "Samed Kütahyalı");
             if (result.Success)
             {
                 return Ok(result);
