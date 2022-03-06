@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -8,6 +9,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +21,20 @@ namespace Business.Concrete
     public class JobSeekerCvImageManager : IJobSeekerCvImageService
     {
         private readonly IJobSeekerCvImageDal _jobSeekerCvImageDal;
+        private readonly IMapper _mapper;
 
-        public JobSeekerCvImageManager(IJobSeekerCvImageDal jobSeekerCvImageDal)
+        public JobSeekerCvImageManager(IJobSeekerCvImageDal jobSeekerCvImageDal, IMapper mapper)
         {
             _jobSeekerCvImageDal = jobSeekerCvImageDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("jobseekercvimage.add,admin")]
         [ValidationAspect(typeof(JobSeekerCvImageValidator))]
         [CacheRemoveAspect("IJobSeekerCvImageService.Get")]
-        public async Task<IResult> AddAsync(JobSeekerCvImage jobSeekerCvImage, string createdByName)
+        public async Task<IResult> AddAsync(JobSeekerCvImageAddDto jobSeekerCvImageAddDto, string createdByName)
         {
+            var jobSeekerCvImage = _mapper.Map<JobSeekerCvImage>(jobSeekerCvImageAddDto);
             jobSeekerCvImage.CreatedByName = createdByName;
             jobSeekerCvImage.ModifiedByName = createdByName;
             await _jobSeekerCvImageDal.AddAsync(jobSeekerCvImage);
@@ -52,47 +57,59 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvImage>>> GetAllAsync()
+        public async Task<IDataResult<JobSeekerCvImageListDto>> GetAllAsync()
         {
             var jobSeekerCvImages = await _jobSeekerCvImageDal.GetAllAsync(null, j => j.JobSeekerCv);
             if (jobSeekerCvImages.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvImage>>();
+                return new SuccessDataResult<JobSeekerCvImageListDto>(new JobSeekerCvImageListDto
+                {
+                    JobSeekerCvImages = jobSeekerCvImages
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvImage>>(Messages.JobSeekerCvImage.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvImageListDto>(Messages.JobSeekerCvImage.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvImage>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<JobSeekerCvImageListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobSeekerCvImages = await _jobSeekerCvImageDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.JobSeekerCv);
             if (jobSeekerCvImages.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvImage>>();
+                return new SuccessDataResult<JobSeekerCvImageListDto>(new JobSeekerCvImageListDto
+                {
+                    JobSeekerCvImages = jobSeekerCvImages
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvImage>>(Messages.JobSeekerCvImage.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvImageListDto>(Messages.JobSeekerCvImage.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvImage>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<JobSeekerCvImageListDto>> GetAllByNonDeletedAsync()
         {
             var jobSeekerCvImages = await _jobSeekerCvImageDal.GetAllAsync(j => !j.IsDeleted, j => j.JobSeekerCv);
             if (jobSeekerCvImages.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvImage>>();
+                return new SuccessDataResult<JobSeekerCvImageListDto>(new JobSeekerCvImageListDto
+                {
+                    JobSeekerCvImages = jobSeekerCvImages
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvImage>>(Messages.JobSeekerCvImage.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvImageListDto>(Messages.JobSeekerCvImage.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<JobSeekerCvImage>> GetAsync(int jobSeekerCvImageId)
+        public async Task<IDataResult<JobSeekerCvImageDto>> GetAsync(int jobSeekerCvImageId)
         {
             var jobSeekerCvImage = await _jobSeekerCvImageDal.GetAsync(j => j.Id == jobSeekerCvImageId, j => j.JobSeekerCv);
             if (jobSeekerCvImage != null)
             {
-                return new SuccessDataResult<JobSeekerCvImage>();
+                return new SuccessDataResult<JobSeekerCvImageDto>(new JobSeekerCvImageDto
+                {
+                    JobSeekerCvImage = jobSeekerCvImage
+                });
             }
-            return new ErrorDataResult<JobSeekerCvImage>();
+            return new ErrorDataResult<JobSeekerCvImageDto>(Messages.JobSeekerCvImage.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int jobSeekerCvImageId)
@@ -110,11 +127,12 @@ namespace Business.Concrete
         [SecuredOperation("jobseekercvimage.update,admin")]
         [ValidationAspect(typeof(JobSeekerCvImageValidator))]
         [CacheRemoveAspect("IJobSeekerCvImageService.Get")]
-        public async Task<IResult> UpdateAsync(JobSeekerCvImage jobSeekerCvImage, string modifiedByName)
+        public async Task<IResult> UpdateAsync(JobSeekerCvImageUpdateDto jobSeekerCvImageUpdateDto, string modifiedByName)
         {
-            var oldjobSeekerCvImage = await _jobSeekerCvImageDal.GetAsync(j => j.Id == jobSeekerCvImage.Id);
-            oldjobSeekerCvImage.ModifiedByName = modifiedByName;
-            var updatedJobSeekerCvImage = await _jobSeekerCvImageDal.UpdateAsync(oldjobSeekerCvImage);
+            var oldJobSeekerCvImage = await _jobSeekerCvImageDal.GetAsync(j => j.Id == jobSeekerCvImageUpdateDto.Id);
+            var jobSeekerCvImage = _mapper.Map<JobSeekerCvImageUpdateDto, JobSeekerCvImage>(jobSeekerCvImageUpdateDto, oldJobSeekerCvImage);
+            jobSeekerCvImage.ModifiedByName = modifiedByName;
+            await _jobSeekerCvImageDal.UpdateAsync(jobSeekerCvImage);
             return new SuccessResult(Messages.JobSeekerCvImage.jobSeekerCvImageUpdated);
         }
     }

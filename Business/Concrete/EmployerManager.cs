@@ -111,7 +111,7 @@ namespace Business.Concrete
                     Employer = employer
                 });
             }
-            return new ErrorDataResult<EmployerDto>(Messages.Employer.NotFound(isPlural: true));
+            return new ErrorDataResult<EmployerDto>(Messages.Employer.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int employerId)

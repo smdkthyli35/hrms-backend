@@ -10,6 +10,6 @@ namespace Entities.Dtos
 {
     public class LanguageListDto : IDto
     {
-        public List<Language> Languages { get; set; }
+        public IList<Language> Languages { get; set; }
     }
 }

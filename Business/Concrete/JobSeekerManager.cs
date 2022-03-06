@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -8,6 +9,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,21 +21,24 @@ namespace Business.Concrete
     public class JobSeekerManager : IJobSeekerService
     {
         private readonly IJobSeekerDal _jobSeekerDal;
+        private readonly IMapper _mapper;
 
-        public JobSeekerManager(IJobSeekerDal jobSeekerDal)
+        public JobSeekerManager(IJobSeekerDal jobSeekerDal, IMapper mapper)
         {
             _jobSeekerDal = jobSeekerDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("jobseeker.add,admin")]
         [ValidationAspect(typeof(JobSeekerValidator))]
         [CacheRemoveAspect("IJobSeekerService.Get")]
-        public async Task<IResult> AddAsync(JobSeeker jobSeeker, string createdByName)
+        public async Task<IResult> AddAsync(JobSeekerAddDto jobSeekerAddDto, string createdByName)
         {
+            var jobSeeker = _mapper.Map<JobSeeker>(jobSeekerAddDto);
             jobSeeker.CreatedByName = createdByName;
             jobSeeker.ModifiedByName = createdByName;
-            await _jobSeekerDal.AddAsync(jobSeeker);
-            return new SuccessResult(Messages.JobSeeker.Add(jobSeeker.FirstName, jobSeeker.LastName));
+            var addJobSeeker = await _jobSeekerDal.AddAsync(jobSeeker);
+            return new SuccessResult(Messages.JobSeeker.Add(addJobSeeker.FirstName, addJobSeeker.LastName));
         }
 
         public async Task<IResult> DeleteAsync(int jobSeekerId, string modifiedByName)
@@ -52,47 +57,59 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeeker>>> GetAllAsync()
+        public async Task<IDataResult<JobSeekerListDto>> GetAllAsync()
         {
             var jobSeekers = await _jobSeekerDal.GetAllAsync(null, j => j.JobSeekerCv);
             if (jobSeekers.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeeker>>();
+                return new SuccessDataResult<JobSeekerListDto>(new JobSeekerListDto
+                {
+                    JobSeekers = jobSeekers
+                });
             }
-            return new ErrorDataResult<List<JobSeeker>>(Messages.JobSeeker.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerListDto>(Messages.JobSeeker.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeeker>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<JobSeekerListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobSeekers = await _jobSeekerDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.JobSeekerCv);
             if (jobSeekers.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeeker>>();
+                return new SuccessDataResult<JobSeekerListDto>(new JobSeekerListDto
+                {
+                    JobSeekers = jobSeekers
+                });
             }
-            return new ErrorDataResult<List<JobSeeker>>(Messages.JobSeeker.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerListDto>(Messages.JobSeeker.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeeker>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<JobSeekerListDto>> GetAllByNonDeletedAsync()
         {
             var jobSeekers = await _jobSeekerDal.GetAllAsync(j => !j.IsDeleted, j => j.JobSeekerCv);
             if (jobSeekers.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeeker>>();
+                return new SuccessDataResult<JobSeekerListDto>(new JobSeekerListDto
+                {
+                    JobSeekers = jobSeekers
+                });
             }
-            return new ErrorDataResult<List<JobSeeker>>(Messages.JobSeeker.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerListDto>(Messages.JobSeeker.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<JobSeeker>> GetAsync(int jobSeekerId)
+        public async Task<IDataResult<JobSeekerDto>> GetAsync(int jobSeekerId)
         {
             var jobSeeker = await _jobSeekerDal.GetAsync(j => j.Id == jobSeekerId, j => j.JobSeekerCv);
             if (jobSeeker != null)
             {
-                return new SuccessDataResult<JobSeeker>();
+                return new SuccessDataResult<JobSeekerDto>(new JobSeekerDto
+                {
+                    JobSeeker = jobSeeker
+                });
             }
-            return new ErrorDataResult<JobSeeker>();
+            return new ErrorDataResult<JobSeekerDto>(Messages.JobSeeker.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int jobSeekerId)
@@ -110,11 +127,12 @@ namespace Business.Concrete
         [SecuredOperation("jobseeker.update,admin")]
         [ValidationAspect(typeof(JobSeekerValidator))]
         [CacheRemoveAspect("IJobSeekerService.Get")]
-        public async Task<IResult> UpdateAsync(JobSeeker jobSeeker, string modifiedByName)
+        public async Task<IResult> UpdateAsync(JobSeekerUpdateDto jobSeekerUpdateDto, string modifiedByName)
         {
-            var oldjobSeeker = await _jobSeekerDal.GetAsync(j => j.Id == jobSeeker.Id);
-            oldjobSeeker.ModifiedByName = modifiedByName;
-            var updatedJobSeeker = await _jobSeekerDal.UpdateAsync(oldjobSeeker);
+            var oldJobSeeker = await _jobSeekerDal.GetAsync(j => j.Id == jobSeekerUpdateDto.Id);
+            var jobSeeker = _mapper.Map<JobSeekerUpdateDto, JobSeeker>(jobSeekerUpdateDto, oldJobSeeker);
+            jobSeeker.ModifiedByName = modifiedByName;
+            var updatedJobSeeker = await _jobSeekerDal.UpdateAsync(jobSeeker);
             return new SuccessResult(Messages.JobSeeker.Update(updatedJobSeeker.FirstName, updatedJobSeeker.LastName));
         }
     }

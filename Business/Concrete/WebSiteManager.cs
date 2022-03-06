@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -8,6 +9,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +21,20 @@ namespace Business.Concrete
     public class WebSiteManager : IWebSiteService
     {
         private readonly IWebSiteDal _webSiteDal;
+        private readonly IMapper _mapper;
 
-        public WebSiteManager(IWebSiteDal webSiteDal)
+        public WebSiteManager(IWebSiteDal webSiteDal, IMapper mapper)
         {
             _webSiteDal = webSiteDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("website.add,admin")]
         [ValidationAspect(typeof(WebSiteValidator))]
         [CacheRemoveAspect("IWebSiteService.Get")]
-        public async Task<IResult> AddAsync(WebSite webSite, string createdByName)
+        public async Task<IResult> AddAsync(WebSiteAddDto webSiteAddDto, string createdByName)
         {
+            var webSite = _mapper.Map<WebSite>(webSiteAddDto);
             webSite.CreatedByName = createdByName;
             webSite.ModifiedByName = createdByName;
             await _webSiteDal.AddAsync(webSite);
@@ -52,47 +57,59 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<WebSite>>> GetAllAsync()
+        public async Task<IDataResult<WebSiteListDto>> GetAllAsync()
         {
             var webSites = await _webSiteDal.GetAllAsync();
             if (webSites.Count > -1)
             {
-                return new SuccessDataResult<List<WebSite>>();
+                return new SuccessDataResult<WebSiteListDto>(new WebSiteListDto
+                {
+                    WebSites = webSites
+                });
             }
-            return new ErrorDataResult<List<WebSite>>(Messages.WebSite.NotFound(isPlural: true));
+            return new ErrorDataResult<WebSiteListDto>(Messages.WebSite.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<WebSite>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<WebSiteListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var webSites = await _webSiteDal.GetAllAsync(w => !w.IsDeleted && w.IsActive);
             if (webSites.Count > -1)
             {
-                return new SuccessDataResult<List<WebSite>>();
+                return new SuccessDataResult<WebSiteListDto>(new WebSiteListDto
+                {
+                    WebSites = webSites
+                });
             }
-            return new ErrorDataResult<List<WebSite>>(Messages.WebSite.NotFound(isPlural: true));
+            return new ErrorDataResult<WebSiteListDto>(Messages.WebSite.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<WebSite>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<WebSiteListDto>> GetAllByNonDeletedAsync()
         {
             var webSites = await _webSiteDal.GetAllAsync(w => !w.IsDeleted);
             if (webSites.Count > -1)
             {
-                return new SuccessDataResult<List<WebSite>>();
+                return new SuccessDataResult<WebSiteListDto>(new WebSiteListDto
+                {
+                    WebSites = webSites
+                });
             }
-            return new ErrorDataResult<List<WebSite>>(Messages.WebSite.NotFound(isPlural: true));
+            return new ErrorDataResult<WebSiteListDto>(Messages.WebSite.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<WebSite>> GetAsync(int webSiteId)
+        public async Task<IDataResult<WebSiteDto>> GetAsync(int webSiteId)
         {
             var webSite = await _webSiteDal.GetAsync(w => w.Id == webSiteId);
             if (webSite != null)
             {
-                return new SuccessDataResult<WebSite>();
+                return new SuccessDataResult<WebSiteDto>(new WebSiteDto
+                {
+                    WebSite = webSite
+                });
             }
-            return new ErrorDataResult<WebSite>(Messages.WebSite.NotFound(isPlural: true));
+            return new ErrorDataResult<WebSiteDto>(Messages.WebSite.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int webSiteId)
@@ -110,11 +127,12 @@ namespace Business.Concrete
         [SecuredOperation("website.update,admin")]
         [ValidationAspect(typeof(WebSiteValidator))]
         [CacheRemoveAspect("IWebSiteService.Get")]
-        public async Task<IResult> UpdateAsync(WebSite webSite, string modifiedByName)
+        public async Task<IResult> UpdateAsync(WebSiteUpdateDto webSiteUpdateDto, string modifiedByName)
         {
-            var oldWebSite = await _webSiteDal.GetAsync(w => w.Id == webSite.Id);
-            oldWebSite.ModifiedByName = modifiedByName;
-            var updatedWebSite = await _webSiteDal.UpdateAsync(oldWebSite);
+            var oldWebSite = await _webSiteDal.GetAsync(w => w.Id == webSiteUpdateDto.Id);
+            var webSite = _mapper.Map<WebSiteUpdateDto, WebSite>(webSiteUpdateDto, oldWebSite);
+            webSite.ModifiedByName = modifiedByName;
+            await _webSiteDal.UpdateAsync(webSite);
             return new SuccessResult(Messages.WebSite.webSiteUpdated);
         }
     }

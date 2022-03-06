@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -8,6 +9,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +21,20 @@ namespace Business.Concrete
     public class JobSeekerCvSkillManager : IJobSeekerCvSkillService
     {
         private readonly IJobSeekerCvSkillDal _jobSeekerCvSkillDal;
+        private readonly IMapper _mapper;
 
-        public JobSeekerCvSkillManager(IJobSeekerCvSkillDal jobSeekerCvSkillDal)
+        public JobSeekerCvSkillManager(IJobSeekerCvSkillDal jobSeekerCvSkillDal, IMapper mapper)
         {
             _jobSeekerCvSkillDal = jobSeekerCvSkillDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("jobseekercvskill.add,admin")]
         [ValidationAspect(typeof(JobSeekerCvSkillValidator))]
         [CacheRemoveAspect("IJobSeekerCvSkillService.Get")]
-        public async Task<IResult> AddAsync(JobSeekerCvSkill jobSeekerCvSkill, string createdByName)
+        public async Task<IResult> AddAsync(JobSeekerCvSkillAddDto jobSeekerCvSkillAddDto, string createdByName)
         {
+            var jobSeekerCvSkill = _mapper.Map<JobSeekerCvSkill>(jobSeekerCvSkillAddDto);
             jobSeekerCvSkill.CreatedByName = createdByName;
             jobSeekerCvSkill.ModifiedByName = createdByName;
             await _jobSeekerCvSkillDal.AddAsync(jobSeekerCvSkill);
@@ -52,47 +57,59 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvSkill>>> GetAllAsync()
+        public async Task<IDataResult<JobSeekerCvSkillListDto>> GetAllAsync()
         {
             var jobSeekerCvSkills = await _jobSeekerCvSkillDal.GetAllAsync(null, j => j.JobSeekerCv);
             if (jobSeekerCvSkills.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvSkill>>();
+                return new SuccessDataResult<JobSeekerCvSkillListDto>(new JobSeekerCvSkillListDto
+                {
+                    JobSeekerCvSkills = jobSeekerCvSkills
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvSkill>>(Messages.JobSeekerCvSkill.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvSkillListDto>(Messages.JobSeekerCvSkill.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvSkill>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<JobSeekerCvSkillListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobSeekerCvSkills = await _jobSeekerCvSkillDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.JobSeekerCv);
             if (jobSeekerCvSkills.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvSkill>>();
+                return new SuccessDataResult<JobSeekerCvSkillListDto>(new JobSeekerCvSkillListDto
+                {
+                    JobSeekerCvSkills = jobSeekerCvSkills
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvSkill>>(Messages.JobSeekerCvSkill.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvSkillListDto>(Messages.JobSeekerCvSkill.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvSkill>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<JobSeekerCvSkillListDto>> GetAllByNonDeletedAsync()
         {
             var jobSeekerCvSkills = await _jobSeekerCvSkillDal.GetAllAsync(j => !j.IsDeleted, j => j.JobSeekerCv);
             if (jobSeekerCvSkills.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvSkill>>();
+                return new SuccessDataResult<JobSeekerCvSkillListDto>(new JobSeekerCvSkillListDto
+                {
+                    JobSeekerCvSkills = jobSeekerCvSkills
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvSkill>>(Messages.JobSeekerCvSkill.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvSkillListDto>(Messages.JobSeekerCvSkill.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<JobSeekerCvSkill>> GetAsync(int jobSeekerCvSkillId)
+        public async Task<IDataResult<JobSeekerCvSkillDto>> GetAsync(int jobSeekerCvSkillId)
         {
             var jobSeekerCvSkill = await _jobSeekerCvSkillDal.GetAsync(j => j.Id == jobSeekerCvSkillId, j => j.JobSeekerCv);
             if (jobSeekerCvSkill != null)
             {
-                return new SuccessDataResult<JobSeekerCvSkill>();
+                return new SuccessDataResult<JobSeekerCvSkillDto>(new JobSeekerCvSkillDto
+                {
+                    JobSeekerCvSkill = jobSeekerCvSkill
+                });
             }
-            return new ErrorDataResult<JobSeekerCvSkill>();
+            return new ErrorDataResult<JobSeekerCvSkillDto>(Messages.JobSeekerCvSkill.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int jobSeekerCvSkillId)
@@ -110,11 +127,12 @@ namespace Business.Concrete
         [SecuredOperation("jobseekercvskill.update,admin")]
         [ValidationAspect(typeof(JobSeekerCvSkillValidator))]
         [CacheRemoveAspect("IJobSeekerCvSkillService.Get")]
-        public async Task<IResult> UpdateAsync(JobSeekerCvSkill jobSeekerCvSkill, string modifiedByName)
+        public async Task<IResult> UpdateAsync(JobSeekerCvSkillUpdateDto jobSeekerCvSkillUpdateDto, string modifiedByName)
         {
-            var oldjobSeekerCvSkill = await _jobSeekerCvSkillDal.GetAsync(j => j.Id == jobSeekerCvSkill.Id);
-            oldjobSeekerCvSkill.ModifiedByName = modifiedByName;
-            var updatedJobSeekerCvSkill = await _jobSeekerCvSkillDal.UpdateAsync(oldjobSeekerCvSkill);
+            var oldJobSeekerCvSkill = await _jobSeekerCvSkillDal.GetAsync(j => j.Id == jobSeekerCvSkillUpdateDto.Id);
+            var jobSeekerCvSkill = _mapper.Map<JobSeekerCvSkillUpdateDto, JobSeekerCvSkill>(jobSeekerCvSkillUpdateDto, oldJobSeekerCvSkill);
+            jobSeekerCvSkill.ModifiedByName = modifiedByName;
+            await _jobSeekerCvSkillDal.UpdateAsync(jobSeekerCvSkill);
             return new SuccessResult(Messages.JobSeekerCvSkill.jobSeekerCvSkillUpdated);
         }
     }

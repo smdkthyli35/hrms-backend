@@ -109,7 +109,7 @@ namespace Business.Concrete
                     JobSeekerCvEducation = jobSeekerCvEducation
                 });
             }
-            return new ErrorDataResult<JobSeekerCvEducationDto>();
+            return new ErrorDataResult<JobSeekerCvEducationDto>(Messages.JobSeekerCvEducation.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int jobSeekerCvEducationId)
@@ -129,8 +129,8 @@ namespace Business.Concrete
         [CacheRemoveAspect("IJobSeekerCvEducationService.Get")]
         public async Task<IResult> UpdateAsync(JobSeekerCvEducationUpdateDto jobSeekerCvEducationUpdateDto, string modifiedByName)
         {
-            var oldjobSeekerCvEducation = await _jobSeekerCvEducationDal.GetAsync(j => j.Id == jobSeekerCvEducationUpdateDto.Id);
-            var jobSeekerCvEducation = _mapper.Map<JobSeekerCvEducationUpdateDto, JobSeekerCvEducation>(jobSeekerCvEducationUpdateDto, oldjobSeekerCvEducation);
+            var oldJobSeekerCvEducation = await _jobSeekerCvEducationDal.GetAsync(j => j.Id == jobSeekerCvEducationUpdateDto.Id);
+            var jobSeekerCvEducation = _mapper.Map<JobSeekerCvEducationUpdateDto, JobSeekerCvEducation>(jobSeekerCvEducationUpdateDto, oldJobSeekerCvEducation);
             jobSeekerCvEducation.ModifiedByName = modifiedByName;
             await _jobSeekerCvEducationDal.UpdateAsync(jobSeekerCvEducation);
             return new SuccessResult(Messages.JobSeekerCvEducation.jobSeekerCvEducationUpdated);

@@ -109,7 +109,7 @@ namespace Business.Concrete
                     JobPosition = jobPosition
                 });
             }
-            return new ErrorDataResult<JobPositionDto>();
+            return new ErrorDataResult<JobPositionDto>(Messages.JobPosition.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int jobPositionId)

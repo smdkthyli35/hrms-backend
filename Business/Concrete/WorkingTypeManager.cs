@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -8,6 +9,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +21,20 @@ namespace Business.Concrete
     public class WorkingTypeManager : IWorkingTypeService
     {
         private readonly IWorkingTypeDal _workingTypeDal;
+        private readonly IMapper _mapper;
 
-        public WorkingTypeManager(IWorkingTypeDal workingTypeDal)
+        public WorkingTypeManager(IWorkingTypeDal workingTypeDal, IMapper mapper)
         {
             _workingTypeDal = workingTypeDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("workingtype.add,admin")]
         [ValidationAspect(typeof(WorkingTypeValidator))]
         [CacheRemoveAspect("IWorkingTypeService.Get")]
-        public async Task<IResult> AddAsync(WorkingType workingType, string createdByName)
+        public async Task<IResult> AddAsync(WorkingTypeAddDto workingTypeAddDto, string createdByName)
         {
+            var workingType = _mapper.Map<WorkingType>(workingTypeAddDto);
             workingType.CreatedByName = createdByName;
             workingType.ModifiedByName = createdByName;
             await _workingTypeDal.AddAsync(workingType);
@@ -52,47 +57,59 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<WorkingType>>> GetAllAsync()
+        public async Task<IDataResult<WorkingTypeListDto>> GetAllAsync()
         {
             var workingTypes = await _workingTypeDal.GetAllAsync();
             if (workingTypes.Count > -1)
             {
-                return new SuccessDataResult<List<WorkingType>>();
+                return new SuccessDataResult<WorkingTypeListDto>(new WorkingTypeListDto
+                {
+                    WorkingTypes = workingTypes
+                });
             }
-            return new ErrorDataResult<List<WorkingType>>(Messages.WorkingType.NotFound(isPlural: true));
+            return new ErrorDataResult<WorkingTypeListDto>(Messages.WorkingType.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<WorkingType>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<WorkingTypeListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var workingTypes = await _workingTypeDal.GetAllAsync(w => !w.IsDeleted && w.IsActive);
             if (workingTypes.Count > -1)
             {
-                return new SuccessDataResult<List<WorkingType>>();
+                return new SuccessDataResult<WorkingTypeListDto>(new WorkingTypeListDto
+                {
+                    WorkingTypes = workingTypes
+                });
             }
-            return new ErrorDataResult<List<WorkingType>>(Messages.WorkingType.NotFound(isPlural: true));
+            return new ErrorDataResult<WorkingTypeListDto>(Messages.WorkingType.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<WorkingType>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<WorkingTypeListDto>> GetAllByNonDeletedAsync()
         {
             var workingTypes = await _workingTypeDal.GetAllAsync(w => !w.IsDeleted);
             if (workingTypes.Count > -1)
             {
-                return new SuccessDataResult<List<WorkingType>>();
+                return new SuccessDataResult<WorkingTypeListDto>(new WorkingTypeListDto
+                {
+                    WorkingTypes = workingTypes
+                });
             }
-            return new ErrorDataResult<List<WorkingType>>(Messages.WorkingType.NotFound(isPlural: true));
+            return new ErrorDataResult<WorkingTypeListDto>(Messages.WorkingType.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<WorkingType>> GetAsync(int workingTypeId)
+        public async Task<IDataResult<WorkingTypeDto>> GetAsync(int workingTypeId)
         {
             var workingType = await _workingTypeDal.GetAsync(w => w.Id == workingTypeId);
             if (workingType != null)
             {
-                return new SuccessDataResult<WorkingType>();
+                return new SuccessDataResult<WorkingTypeDto>(new WorkingTypeDto
+                {
+                    WorkingType = workingType
+                });
             }
-            return new ErrorDataResult<WorkingType>(Messages.WorkingType.NotFound(isPlural: true));
+            return new ErrorDataResult<WorkingTypeDto>(Messages.WorkingType.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int workingTypeId)
@@ -110,11 +127,12 @@ namespace Business.Concrete
         [SecuredOperation("workingtype.update,admin")]
         [ValidationAspect(typeof(WorkingTypeValidator))]
         [CacheRemoveAspect("IWorkingTypeService.Get")]
-        public async Task<IResult> UpdateAsync(WorkingType workingType, string modifiedByName)
+        public async Task<IResult> UpdateAsync(WorkingTypeUpdateDto workingTypeUpdateDto, string modifiedByName)
         {
-            var oldWorkingType = await _workingTypeDal.GetAsync(w => w.Id == workingType.Id);
-            oldWorkingType.ModifiedByName = modifiedByName;
-            var updatedWorkingType = await _workingTypeDal.UpdateAsync(oldWorkingType);
+            var oldWorkingType = await _workingTypeDal.GetAsync(w => w.Id == workingTypeUpdateDto.Id);
+            var workingType = _mapper.Map<WorkingTypeUpdateDto, WorkingType>(workingTypeUpdateDto, oldWorkingType);
+            workingType.ModifiedByName = modifiedByName;
+            await _workingTypeDal.UpdateAsync(workingType);
             return new SuccessResult(Messages.WorkingType.workingTypeUpdated);
         }
     }

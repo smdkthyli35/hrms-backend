@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -8,6 +9,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +21,20 @@ namespace Business.Concrete
     public class JobSeekerCvExperienceManager : IJobSeekerCvExperienceService
     {
         private readonly IJobSeekerCvExperienceDal _jobSeekerCvExperienceDal;
+        private readonly IMapper _mapper;
 
-        public JobSeekerCvExperienceManager(IJobSeekerCvExperienceDal jobSeekerCvExperienceDal)
+        public JobSeekerCvExperienceManager(IJobSeekerCvExperienceDal jobSeekerCvExperienceDal, IMapper mapper)
         {
             _jobSeekerCvExperienceDal = jobSeekerCvExperienceDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("jobseekercvexperience.add,admin")]
         [ValidationAspect(typeof(JobSeekerCvExperienceValidator))]
         [CacheRemoveAspect("IJobSeekerCvExperienceService.Get")]
-        public async Task<IResult> AddAsync(JobSeekerCvExperience jobSeekerCvExperience, string createdByName)
+        public async Task<IResult> AddAsync(JobSeekerCvExperienceAddDto jobSeekerCvExperienceAddDto, string createdByName)
         {
+            var jobSeekerCvExperience = _mapper.Map<JobSeekerCvExperience>(jobSeekerCvExperienceAddDto);
             jobSeekerCvExperience.CreatedByName = createdByName;
             jobSeekerCvExperience.ModifiedByName = createdByName;
             await _jobSeekerCvExperienceDal.AddAsync(jobSeekerCvExperience);
@@ -52,47 +57,59 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvExperience>>> GetAllAsync()
+        public async Task<IDataResult<JobSeekerCvExperienceListDto>> GetAllAsync()
         {
             var jobSeekerCvExperiences = await _jobSeekerCvExperienceDal.GetAllAsync(null, j => j.JobSeekerCv, j => j.JobPosition);
             if (jobSeekerCvExperiences.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvExperience>>();
+                return new SuccessDataResult<JobSeekerCvExperienceListDto>(new JobSeekerCvExperienceListDto
+                {
+                    JobSeekerCvExperiences = jobSeekerCvExperiences
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvExperience>>(Messages.JobSeekerCvExperience.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvExperienceListDto>(Messages.JobSeekerCvExperience.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvExperience>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<JobSeekerCvExperienceListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobSeekerCvExperiences = await _jobSeekerCvExperienceDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.JobSeekerCv, j => j.JobPosition);
             if (jobSeekerCvExperiences.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvExperience>>();
+                return new SuccessDataResult<JobSeekerCvExperienceListDto>(new JobSeekerCvExperienceListDto
+                {
+                    JobSeekerCvExperiences = jobSeekerCvExperiences
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvExperience>>(Messages.JobSeekerCvExperience.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvExperienceListDto>(Messages.JobSeekerCvExperience.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvExperience>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<JobSeekerCvExperienceListDto>> GetAllByNonDeletedAsync()
         {
             var jobSeekerCvExperiences = await _jobSeekerCvExperienceDal.GetAllAsync(j => !j.IsDeleted, j => j.JobSeekerCv, j => j.JobPosition);
             if (jobSeekerCvExperiences.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvExperience>>();
+                return new SuccessDataResult<JobSeekerCvExperienceListDto>(new JobSeekerCvExperienceListDto
+                {
+                    JobSeekerCvExperiences = jobSeekerCvExperiences
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvExperience>>(Messages.JobSeekerCvExperience.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvExperienceListDto>(Messages.JobSeekerCvExperience.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<JobSeekerCvExperience>> GetAsync(int jobSeekerCvExperienceId)
+        public async Task<IDataResult<JobSeekerCvExperienceDto>> GetAsync(int jobSeekerCvExperienceId)
         {
             var jobSeekerCvExperience = await _jobSeekerCvExperienceDal.GetAsync(j => j.Id == jobSeekerCvExperienceId, j => j.JobSeekerCv, j => j.JobPosition);
             if (jobSeekerCvExperience != null)
             {
-                return new SuccessDataResult<JobSeekerCvExperience>();
+                return new SuccessDataResult<JobSeekerCvExperienceDto>(new JobSeekerCvExperienceDto
+                {
+                    JobSeekerCvExperience = jobSeekerCvExperience
+                });
             }
-            return new ErrorDataResult<JobSeekerCvExperience>();
+            return new ErrorDataResult<JobSeekerCvExperienceDto>(Messages.JobSeekerCvExperience.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int jobSeekerCvExperienceId)
@@ -110,11 +127,12 @@ namespace Business.Concrete
         [SecuredOperation("jobseekercvexperience.update,admin")]
         [ValidationAspect(typeof(JobSeekerCvExperienceValidator))]
         [CacheRemoveAspect("IJobSeekerCvExperienceService.Get")]
-        public async Task<IResult> UpdateAsync(JobSeekerCvExperience jobSeekerCvExperience, string modifiedByName)
+        public async Task<IResult> UpdateAsync(JobSeekerCvExperienceUpdateDto jobSeekerCvExperienceUpdateDto, string modifiedByName)
         {
-            var oldjobSeekerCvExperience = await _jobSeekerCvExperienceDal.GetAsync(j => j.Id == jobSeekerCvExperience.Id);
-            oldjobSeekerCvExperience.ModifiedByName = modifiedByName;
-            var updatedJobSeekerCvExperience = await _jobSeekerCvExperienceDal.UpdateAsync(oldjobSeekerCvExperience);
+            var oldJobSeekerCvExperience = await _jobSeekerCvExperienceDal.GetAsync(j => j.Id == jobSeekerCvExperienceUpdateDto.Id);
+            var jobSeekerCvExperience = _mapper.Map<JobSeekerCvExperienceUpdateDto, JobSeekerCvExperience>(jobSeekerCvExperienceUpdateDto, oldJobSeekerCvExperience);
+            jobSeekerCvExperience.ModifiedByName = modifiedByName;
+            await _jobSeekerCvExperienceDal.UpdateAsync(jobSeekerCvExperience);
             return new SuccessResult(Messages.JobSeekerCvExperience.jobSeekerCvExperienceUpdated);
         }
     }

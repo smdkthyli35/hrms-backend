@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -8,6 +9,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +21,20 @@ namespace Business.Concrete
     public class LanguageManager : ILanguageService
     {
         private readonly ILanguageDal _languageDal;
+        private readonly IMapper _mapper;
 
-        public LanguageManager(ILanguageDal languageDal)
+        public LanguageManager(ILanguageDal languageDal, IMapper mapper)
         {
             _languageDal = languageDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("language.add,admin")]
         [ValidationAspect(typeof(LanguageValidator))]
         [CacheRemoveAspect("ILanguageService.Get")]
-        public async Task<IResult> AddAsync(Language language, string createdByName)
+        public async Task<IResult> AddAsync(LanguageAddDto languageAddDto, string createdByName)
         {
+            var language = _mapper.Map<Language>(languageAddDto);
             language.CreatedByName = createdByName;
             language.ModifiedByName = createdByName;
             await _languageDal.AddAsync(language);
@@ -52,47 +57,59 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<Language>>> GetAllAsync()
+        public async Task<IDataResult<LanguageListDto>> GetAllAsync()
         {
             var languages = await _languageDal.GetAllAsync();
             if (languages.Count > -1)
             {
-                return new SuccessDataResult<List<Language>>();
+                return new SuccessDataResult<LanguageListDto>(new LanguageListDto
+                {
+                    Languages = languages
+                });
             }
-            return new ErrorDataResult<List<Language>>(Messages.Language.NotFound(isPlural: true));
+            return new ErrorDataResult<LanguageListDto>(Messages.Language.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<Language>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<LanguageListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var languages = await _languageDal.GetAllAsync(l => !l.IsDeleted && l.IsActive);
             if (languages.Count > -1)
             {
-                return new SuccessDataResult<List<Language>>();
+                return new SuccessDataResult<LanguageListDto>(new LanguageListDto
+                {
+                    Languages = languages
+                });
             }
-            return new ErrorDataResult<List<Language>>(Messages.Language.NotFound(isPlural: true));
+            return new ErrorDataResult<LanguageListDto>(Messages.Language.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<Language>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<LanguageListDto>> GetAllByNonDeletedAsync()
         {
             var languages = await _languageDal.GetAllAsync(l => !l.IsDeleted);
             if (languages.Count > -1)
             {
-                return new SuccessDataResult<List<Language>>();
+                return new SuccessDataResult<LanguageListDto>(new LanguageListDto
+                {
+                    Languages = languages
+                });
             }
-            return new ErrorDataResult<List<Language>>(Messages.Language.NotFound(isPlural: true));
+            return new ErrorDataResult<LanguageListDto>(Messages.Language.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<Language>> GetAsync(int languageId)
+        public async Task<IDataResult<LanguageDto>> GetAsync(int languageId)
         {
             var language = await _languageDal.GetAsync(l => l.Id == languageId);
             if (language != null)
             {
-                return new SuccessDataResult<Language>();
+                return new SuccessDataResult<LanguageDto>(new LanguageDto
+                {
+                    Language = language
+                });
             }
-            return new ErrorDataResult<Language>(Messages.Language.NotFound(isPlural: true));
+            return new ErrorDataResult<LanguageDto>(Messages.Language.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int languageId)
@@ -110,11 +127,12 @@ namespace Business.Concrete
         [SecuredOperation("language.update,admin")]
         [ValidationAspect(typeof(LanguageValidator))]
         [CacheRemoveAspect("ILanguageService.Get")]
-        public async Task<IResult> UpdateAsync(Language language, string modifiedByName)
+        public async Task<IResult> UpdateAsync(LanguageUpdateDto languageUpdateDto, string modifiedByName)
         {
-            var oldLanguage = await _languageDal.GetAsync(l => l.Id == language.Id);
-            oldLanguage.ModifiedByName = modifiedByName;
-            var updatedLanguage = await _languageDal.UpdateAsync(oldLanguage);
+            var oldLanguage = await _languageDal.GetAsync(l => l.Id == languageUpdateDto.Id);
+            var language = _mapper.Map<LanguageUpdateDto, Language>(languageUpdateDto, oldLanguage);
+            language.ModifiedByName = modifiedByName;
+            await _languageDal.UpdateAsync(language);
             return new SuccessResult(Messages.Language.languageUpdated);
         }
     }

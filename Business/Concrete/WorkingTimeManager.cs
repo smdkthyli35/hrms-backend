@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -8,6 +9,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +21,20 @@ namespace Business.Concrete
     public class WorkingTimeManager : IWorkingTimeService
     {
         private readonly IWorkingTimeDal _workingTimeDal;
+        private readonly IMapper _mapper;
 
-        public WorkingTimeManager(IWorkingTimeDal workingTimeDal)
+        public WorkingTimeManager(IWorkingTimeDal workingTimeDal, IMapper mapper)
         {
             _workingTimeDal = workingTimeDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("workingtime.add,admin")]
         [ValidationAspect(typeof(WorkingTimeValidator))]
         [CacheRemoveAspect("IWorkingTimeService.Get")]
-        public async Task<IResult> AddAsync(WorkingTime workingTime, string createdByName)
+        public async Task<IResult> AddAsync(WorkingTimeAddDto workingTimeAddDto, string createdByName)
         {
+            var workingTime = _mapper.Map<WorkingTime>(workingTimeAddDto);
             workingTime.CreatedByName = createdByName;
             workingTime.ModifiedByName = createdByName;
             await _workingTimeDal.AddAsync(workingTime);
@@ -52,47 +57,59 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<WorkingTime>>> GetAllAsync()
+        public async Task<IDataResult<WorkingTimeListDto>> GetAllAsync()
         {
             var workingTimes = await _workingTimeDal.GetAllAsync();
             if (workingTimes.Count > -1)
             {
-                return new SuccessDataResult<List<WorkingTime>>();
+                return new SuccessDataResult<WorkingTimeListDto>(new WorkingTimeListDto
+                {
+                    WorkingTimes = workingTimes
+                });
             }
-            return new ErrorDataResult<List<WorkingTime>>(Messages.WorkingTime.NotFound(isPlural: true));
+            return new ErrorDataResult<WorkingTimeListDto>(Messages.WorkingTime.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<WorkingTime>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<WorkingTimeListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var workingTimes = await _workingTimeDal.GetAllAsync(w => !w.IsDeleted && w.IsActive);
             if (workingTimes.Count > -1)
             {
-                return new SuccessDataResult<List<WorkingTime>>();
+                return new SuccessDataResult<WorkingTimeListDto>(new WorkingTimeListDto
+                {
+                    WorkingTimes = workingTimes
+                });
             }
-            return new ErrorDataResult<List<WorkingTime>>(Messages.WorkingTime.NotFound(isPlural: true));
+            return new ErrorDataResult<WorkingTimeListDto>(Messages.WorkingTime.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<WorkingTime>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<WorkingTimeListDto>> GetAllByNonDeletedAsync()
         {
             var workingTimes = await _workingTimeDal.GetAllAsync(w => !w.IsDeleted);
             if (workingTimes.Count > -1)
             {
-                return new SuccessDataResult<List<WorkingTime>>();
+                return new SuccessDataResult<WorkingTimeListDto>(new WorkingTimeListDto
+                {
+                    WorkingTimes = workingTimes
+                });
             }
-            return new ErrorDataResult<List<WorkingTime>>(Messages.WorkingTime.NotFound(isPlural: true));
+            return new ErrorDataResult<WorkingTimeListDto>(Messages.WorkingTime.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<WorkingTime>> GetAsync(int workingTimeId)
+        public async Task<IDataResult<WorkingTimeDto>> GetAsync(int workingTimeId)
         {
             var workingTime = await _workingTimeDal.GetAsync(w => w.Id == workingTimeId);
             if (workingTime != null)
             {
-                return new SuccessDataResult<WorkingTime>();
+                return new SuccessDataResult<WorkingTimeDto>(new WorkingTimeDto
+                {
+                    WorkingTime = workingTime
+                });
             }
-            return new ErrorDataResult<WorkingTime>(Messages.WorkingTime.NotFound(isPlural: true));
+            return new ErrorDataResult<WorkingTimeDto>(Messages.WorkingTime.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int workingTimeId)
@@ -110,11 +127,12 @@ namespace Business.Concrete
         [SecuredOperation("workingtime.update,admin")]
         [ValidationAspect(typeof(WorkingTimeValidator))]
         [CacheRemoveAspect("IWorkingTimeService.Get")]
-        public async Task<IResult> UpdateAsync(WorkingTime workingTime, string modifiedByName)
+        public async Task<IResult> UpdateAsync(WorkingTimeUpdateDto workingTimeUpdateDto, string modifiedByName)
         {
-            var oldWorkingTime = await _workingTimeDal.GetAsync(w => w.Id == workingTime.Id);
-            oldWorkingTime.ModifiedByName = modifiedByName;
-            var updatedWorkingTime = await _workingTimeDal.UpdateAsync(oldWorkingTime);
+            var oldWorkingTime = await _workingTimeDal.GetAsync(w => w.Id == workingTimeUpdateDto.Id);
+            var workingTime = _mapper.Map<WorkingTimeUpdateDto, WorkingTime>(workingTimeUpdateDto, oldWorkingTime);
+            workingTime.ModifiedByName = modifiedByName;
+            await _workingTimeDal.UpdateAsync(workingTime);
             return new SuccessResult(Messages.WorkingTime.workingTimeUpdated);
         }
     }

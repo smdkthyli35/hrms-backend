@@ -1,4 +1,5 @@
-﻿using Business.Abstract;
+﻿using AutoMapper;
+using Business.Abstract;
 using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
@@ -8,6 +9,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +21,20 @@ namespace Business.Concrete
     public class JobSeekerCvWebSiteManager : IJobSeekerCvWebSiteService
     {
         private readonly IJobSeekerCvWebSiteDal _jobSeekerCvWebSiteDal;
+        private readonly IMapper _mapper;
 
-        public JobSeekerCvWebSiteManager(IJobSeekerCvWebSiteDal jobSeekerCvWebSiteDal)
+        public JobSeekerCvWebSiteManager(IJobSeekerCvWebSiteDal jobSeekerCvWebSiteDal, IMapper mapper)
         {
             _jobSeekerCvWebSiteDal = jobSeekerCvWebSiteDal;
+            _mapper = mapper;
         }
 
         [SecuredOperation("jobseekercvwebsite.add,admin")]
         [ValidationAspect(typeof(JobSeekerCvWebSiteValidator))]
         [CacheRemoveAspect("IJobSeekerCvWebSiteService.Get")]
-        public async Task<IResult> AddAsync(JobSeekerCvWebSite jobSeekerCvWebSite, string createdByName)
+        public async Task<IResult> AddAsync(JobSeekerCvWebSiteAddDto jobSeekerCvWebSiteAddDto, string createdByName)
         {
+            var jobSeekerCvWebSite = _mapper.Map<JobSeekerCvWebSite>(jobSeekerCvWebSiteAddDto);
             jobSeekerCvWebSite.CreatedByName = createdByName;
             jobSeekerCvWebSite.ModifiedByName = createdByName;
             await _jobSeekerCvWebSiteDal.AddAsync(jobSeekerCvWebSite);
@@ -52,47 +57,59 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvWebSite>>> GetAllAsync()
+        public async Task<IDataResult<JobSeekerCvWebSiteListDto>> GetAllAsync()
         {
             var jobSeekerCvWebSites = await _jobSeekerCvWebSiteDal.GetAllAsync(null, j => j.JobSeekerCv, j => j.WebSite);
             if (jobSeekerCvWebSites.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvWebSite>>();
+                return new SuccessDataResult<JobSeekerCvWebSiteListDto>(new JobSeekerCvWebSiteListDto
+                {
+                    JobSeekerCvWebSites = jobSeekerCvWebSites
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvWebSite>>(Messages.JobSeekerCvWebSite.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvWebSiteListDto>(Messages.JobSeekerCvWebSite.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvWebSite>>> GetAllByNonDeletedAndActiveAsync()
+        public async Task<IDataResult<JobSeekerCvWebSiteListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobSeekerCvWebSites = await _jobSeekerCvWebSiteDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.JobSeekerCv, j => j.WebSite);
             if (jobSeekerCvWebSites.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvWebSite>>();
+                return new SuccessDataResult<JobSeekerCvWebSiteListDto>(new JobSeekerCvWebSiteListDto
+                {
+                    JobSeekerCvWebSites = jobSeekerCvWebSites
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvWebSite>>(Messages.JobSeekerCvWebSite.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvWebSiteListDto>(Messages.JobSeekerCvWebSite.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<List<JobSeekerCvWebSite>>> GetAllByNonDeletedAsync()
+        public async Task<IDataResult<JobSeekerCvWebSiteListDto>> GetAllByNonDeletedAsync()
         {
             var jobSeekerCvWebSites = await _jobSeekerCvWebSiteDal.GetAllAsync(j => !j.IsDeleted, j => j.JobSeekerCv, j => j.WebSite);
             if (jobSeekerCvWebSites.Count > -1)
             {
-                return new SuccessDataResult<List<JobSeekerCvWebSite>>();
+                return new SuccessDataResult<JobSeekerCvWebSiteListDto>(new JobSeekerCvWebSiteListDto
+                {
+                    JobSeekerCvWebSites = jobSeekerCvWebSites
+                });
             }
-            return new ErrorDataResult<List<JobSeekerCvWebSite>>(Messages.JobSeekerCvWebSite.NotFound(isPlural: true));
+            return new ErrorDataResult<JobSeekerCvWebSiteListDto>(Messages.JobSeekerCvWebSite.NotFound(isPlural: true));
         }
 
         [CacheAspect]
-        public async Task<IDataResult<JobSeekerCvWebSite>> GetAsync(int jobSeekerCvWebSiteId)
+        public async Task<IDataResult<JobSeekerCvWebSiteDto>> GetAsync(int jobSeekerCvWebSiteId)
         {
             var jobSeekerCvWebSite = await _jobSeekerCvWebSiteDal.GetAsync(j => j.Id == jobSeekerCvWebSiteId, j => j.JobSeekerCv, j => j.WebSite);
             if (jobSeekerCvWebSite != null)
             {
-                return new SuccessDataResult<JobSeekerCvWebSite>();
+                return new SuccessDataResult<JobSeekerCvWebSiteDto>(new JobSeekerCvWebSiteDto
+                {
+                    JobSeekerCvWebSite = jobSeekerCvWebSite
+                });
             }
-            return new ErrorDataResult<JobSeekerCvWebSite>();
+            return new ErrorDataResult<JobSeekerCvWebSiteDto>(Messages.JobSeekerCvWebSite.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int jobSeekerCvWebSiteId)
@@ -110,11 +127,12 @@ namespace Business.Concrete
         [SecuredOperation("jobseekercvwebsite.update,admin")]
         [ValidationAspect(typeof(JobSeekerCvWebSiteValidator))]
         [CacheRemoveAspect("IJobSeekerCvWebSiteService.Get")]
-        public async Task<IResult> UpdateAsync(JobSeekerCvWebSite jobSeekerCvWebSite, string modifiedByName)
+        public async Task<IResult> UpdateAsync(JobSeekerCvWebSiteUpdateDto jobSeekerCvWebSiteUpdateDto, string modifiedByName)
         {
-            var oldjobSeekerCvWebSite = await _jobSeekerCvWebSiteDal.GetAsync(j => j.Id == jobSeekerCvWebSite.Id);
-            oldjobSeekerCvWebSite.ModifiedByName = modifiedByName;
-            var updatedJobSeekerCvWebSite = await _jobSeekerCvWebSiteDal.UpdateAsync(oldjobSeekerCvWebSite);
+            var oldJobSeekerCvWebSite = await _jobSeekerCvWebSiteDal.GetAsync(j => j.Id == jobSeekerCvWebSiteUpdateDto.Id);
+            var jobSeekerCvWebSite = _mapper.Map<JobSeekerCvWebSiteUpdateDto, JobSeekerCvWebSite>(jobSeekerCvWebSiteUpdateDto, oldJobSeekerCvWebSite);
+            jobSeekerCvWebSite.ModifiedByName = modifiedByName;
+            await _jobSeekerCvWebSiteDal.UpdateAsync(jobSeekerCvWebSite);
             return new SuccessResult(Messages.JobSeekerCvWebSite.jobSeekerCvWebSiteUpdated);
         }
     }

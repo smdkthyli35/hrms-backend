@@ -109,7 +109,7 @@ namespace Business.Concrete
                     JobAdvert = jobAdvert
                 });
             }
-            return new ErrorDataResult<JobAdvertDto>();
+            return new ErrorDataResult<JobAdvertDto>(Messages.JobAdvert.NotFound(isPlural: false));
         }
 
         public async Task<IResult> HardDeleteAsync(int jobAdvertId)
