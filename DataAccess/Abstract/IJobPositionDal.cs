@@ -10,5 +10,6 @@ namespace DataAccess.Abstract
 {
     public interface IJobPositionDal : IEntityRepository<JobPosition>
     {
+        Task<JobPosition> GetByTitle(string title);
     }
 }

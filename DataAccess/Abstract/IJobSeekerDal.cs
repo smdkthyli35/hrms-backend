@@ -10,5 +10,6 @@ namespace DataAccess.Abstract
 {
     public interface IJobSeekerDal : IEntityRepository<JobSeeker>
     {
+        Task<JobSeeker> GetByIdentityNumber(string identityNumber);
     }
 }

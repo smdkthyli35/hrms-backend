@@ -10,5 +10,6 @@ namespace DataAccess.Abstract
 {
     public interface IEmployerDal : IEntityRepository<Employer>
     {
+        Task<Employer> GetByCorporateEmail(string corporateEmail);
     }
 }

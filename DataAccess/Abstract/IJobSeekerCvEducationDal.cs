@@ -10,5 +10,6 @@ namespace DataAccess.Abstract
 {
     public interface IJobSeekerCvEducationDal : IEntityRepository<JobSeekerCvEducation>
     {
+        Task<List<JobSeekerCvEducation>> GetListByJobSeekerCvId(int jobSeekerCvId);
     }
 }

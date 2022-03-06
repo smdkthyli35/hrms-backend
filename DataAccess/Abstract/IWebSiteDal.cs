@@ -10,5 +10,6 @@ namespace DataAccess.Abstract
 {
     public interface IWebSiteDal : IEntityRepository<WebSite>
     {
+        Task<WebSite> GetByName(string name);
     }
 }

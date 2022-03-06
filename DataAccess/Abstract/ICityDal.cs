@@ -10,5 +10,7 @@ namespace DataAccess.Abstract
 {
     public interface ICityDal : IEntityRepository<City>
     {
+        Task<City> GetByName(string name);
+        Task<List<City>> GetByNameContains(string name);
     }
 }

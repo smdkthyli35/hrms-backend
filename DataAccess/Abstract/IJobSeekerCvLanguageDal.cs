@@ -10,5 +10,6 @@ namespace DataAccess.Abstract
 {
     public interface IJobSeekerCvLanguageDal : IEntityRepository<JobSeekerCvLanguage>
     {
+        Task<List<JobSeekerCvLanguage>> GetListByJobSeekerCvId(int jobSeekerCvId);
     }
 }
