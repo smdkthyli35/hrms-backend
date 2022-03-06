@@ -43,6 +43,17 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet("getbytitle")]
+        public async Task<IActionResult> GetByTitle(string title)
+        {
+            var result = await _jobPositionService.GetByTitleAsync(title);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(JobPositionAddDto jobPositionAddDto)
         {
@@ -69,6 +80,17 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Delete(int jobPositionId)
         {
             var result = await _jobPositionService.DeleteAsync(jobPositionId, "Samed Kütahyalı");
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("harddelete")]
+        public async Task<IActionResult> HardDelete(int jobPositionId)
+        {
+            var result = await _jobPositionService.HardDeleteAsync(jobPositionId);
             if (result.Success)
             {
                 return Ok(result);

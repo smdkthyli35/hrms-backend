@@ -75,5 +75,16 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result);
         }
+
+        [HttpPost("harddelete")]
+        public async Task<IActionResult> HardDelete(int jobAdvertId)
+        {
+            var result = await _jobAdvertService.HardDeleteAsync(jobAdvertId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

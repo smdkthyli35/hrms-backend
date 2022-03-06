@@ -43,6 +43,17 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet("getbyname")]
+        public async Task<IActionResult> GetByName(string name)
+        {
+            var result = await _webSiteService.GetByNameAsync(name);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(WebSiteAddDto webSiteAddDto)
         {
@@ -69,6 +80,17 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Delete(int webSiteId)
         {
             var result = await _webSiteService.DeleteAsync(webSiteId, "Samed Kütahyalı");
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("harddelete")]
+        public async Task<IActionResult> HardDelete(int webSiteId)
+        {
+            var result = await _webSiteService.HardDeleteAsync(webSiteId);
             if (result.Success)
             {
                 return Ok(result);

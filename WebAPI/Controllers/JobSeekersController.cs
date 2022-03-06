@@ -43,6 +43,17 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet("getbyidentitynumber")]
+        public async Task<IActionResult> GetByIdentityNumber(string identityNumber)
+        {
+            var result = await _jobSeekerService.GetByIdentityNumberAsync(identityNumber);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(JobSeekerAddDto jobSeekerAddDto)
         {
@@ -69,6 +80,17 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Delete(int jobSeekerId)
         {
             var result = await _jobSeekerService.DeleteAsync(jobSeekerId, "Samed Kütahyalı");
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("harddelete")]
+        public async Task<IActionResult> HardDelete(int jobSeekerId)
+        {
+            var result = await _jobSeekerService.HardDeleteAsync(jobSeekerId);
             if (result.Success)
             {
                 return Ok(result);

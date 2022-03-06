@@ -43,6 +43,17 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet("getlistbyjobseekercv")]
+        public async Task<IActionResult> GetListByJobSeekerCv(int jobSeekerCvId)
+        {
+            var result = await _jobSeekerCvExperienceService.GetListByJobSeekerCvAsync(jobSeekerCvId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(JobSeekerCvExperienceAddDto jobSeekerCvExperienceAddDto)
         {
@@ -69,6 +80,17 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Delete(int jobSeekerCvExperienceId)
         {
             var result = await _jobSeekerCvExperienceService.DeleteAsync(jobSeekerCvExperienceId, "Samed Kütahyalı");
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("harddelete")]
+        public async Task<IActionResult> HardDelete(int jobSeekerCvExperienceId)
+        {
+            var result = await _jobSeekerCvExperienceService.HardDeleteAsync(jobSeekerCvExperienceId);
             if (result.Success)
             {
                 return Ok(result);

@@ -43,6 +43,28 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet("getbyname")]
+        public async Task<IActionResult> GetByName(string name)
+        {
+            var result = await _cityService.GetByNameAsync(name);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpGet("getbynamecontains")]
+        public async Task<IActionResult> GetByNameContains(string name)
+        {
+            var result = await _cityService.GetByNameContainsAsync(name);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(CityAddDto cityAddDto)
         {
@@ -69,6 +91,17 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Delete(int cityId)
         {
             var result = await _cityService.DeleteAsync(cityId, "Samed Kütahyalı");
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("harddelete")]
+        public async Task<IActionResult> HardDelete(int cityId)
+        {
+            var result = await _cityService.HardDeleteAsync(cityId);
             if (result.Success)
             {
                 return Ok(result);

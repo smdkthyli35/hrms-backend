@@ -43,6 +43,17 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet("getlistbyjobseekercv")]
+        public async Task<IActionResult> GetListByJobSeekerCv(int jobSeekerCvId)
+        {
+            var result = await _jobSeekerCvImageService.GetListByJobSeekerCvAsync(jobSeekerCvId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(JobSeekerCvImageAddDto jobSeekerCvImageAddDto)
         {
@@ -69,6 +80,17 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Delete(int jobSeekerCvImageId)
         {
             var result = await _jobSeekerCvImageService.DeleteAsync(jobSeekerCvImageId, "Samed Kütahyalı");
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("harddelete")]
+        public async Task<IActionResult> HardDelete(int jobSeekerCvImageId)
+        {
+            var result = await _jobSeekerCvImageService.HardDeleteAsync(jobSeekerCvImageId);
             if (result.Success)
             {
                 return Ok(result);

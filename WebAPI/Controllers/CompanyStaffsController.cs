@@ -75,5 +75,16 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result);
         }
+
+        [HttpPost("harddelete")]
+        public async Task<IActionResult> HardDelete(int companyStaffId)
+        {
+            var result = await _companyStaffService.HardDeleteAsync(companyStaffId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

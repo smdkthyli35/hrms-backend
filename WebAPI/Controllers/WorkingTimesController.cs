@@ -75,5 +75,16 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result);
         }
+
+        [HttpPost("harddelete")]
+        public async Task<IActionResult> HardDelete(int workingTimeId)
+        {
+            var result = await _workingTimeService.HardDeleteAsync(workingTimeId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }

@@ -43,6 +43,17 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet("getbycorporateemail")]
+        public async Task<IActionResult> GetByCorporateEmail(string corporateEmail)
+        {
+            var result = await _employerService.GetByCorporateEmailAsync(corporateEmail);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(EmployerAddDto employerAddDto)
         {
@@ -69,6 +80,17 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Delete(int employerId)
         {
             var result = await _employerService.DeleteAsync(employerId, "Samed Kütahyalı");
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("harddelete")]
+        public async Task<IActionResult> HardDelete(int employerId)
+        {
+            var result = await _employerService.HardDeleteAsync(employerId);
             if (result.Success)
             {
                 return Ok(result);

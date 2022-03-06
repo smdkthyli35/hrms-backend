@@ -75,5 +75,16 @@ namespace WebAPI.Controllers
             }
             return BadRequest(result);
         }
+
+        [HttpPost("harddelete")]
+        public async Task<IActionResult> HardDelete(int languageId)
+        {
+            var result = await _languageService.HardDeleteAsync(languageId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
     }
 }
