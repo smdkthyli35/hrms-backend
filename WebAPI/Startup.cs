@@ -1,3 +1,4 @@
+using Business.AutoMapper.Profiles;
 using Core.DependencyResolvers;
 using Core.Extensions;
 using Core.Utilities.IoC;
@@ -39,6 +40,26 @@ namespace WebAPI
 
             services.AddDbContext<HrmsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("DataAccess")));
             services.AddScoped<DbContext>(provider => provider.GetService<HrmsContext>());
+
+            services.AddAutoMapper(
+                typeof(CityProfile),
+                typeof(CompanyStaffProfile),
+                typeof(EmployerProfile),
+                typeof(JobAdvertProfile),
+                typeof(JobPositionProfile),
+                typeof(JobSeekerCvEducationProfile),
+                typeof(JobSeekerCvExperienceProfile),
+                typeof(JobSeekerCvImageProfile),
+                typeof(JobSeekerCvLanguageProfile),
+                typeof(JobSeekerCvProfile),
+                typeof(JobSeekerCvSkillProfile),
+                typeof(JobSeekerCvWebSiteProfile),
+                typeof(JobSeekerProfile),
+                typeof(LanguageProfile),
+                typeof(WebSiteProfile),
+                typeof(WorkingTimeProfile),
+                typeof(WorkingTypeProfile)
+                );
 
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
 
