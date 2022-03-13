@@ -17,6 +17,12 @@ namespace DataAccess.Concrete.EntityFramework.Mappings
             builder.Property(w => w.Id).ValueGeneratedOnAdd();
             builder.Property(w => w.Name).HasMaxLength(50);
             builder.Property(w => w.Name).IsRequired();
+            builder.Property(w => w.CreatedByName).IsRequired().HasMaxLength(50);
+            builder.Property(w => w.ModifiedByName).IsRequired().HasMaxLength(50);
+            builder.Property(w => w.ModifiedDate).IsRequired();
+            builder.Property(w => w.CreatedDate).IsRequired();
+            builder.Property(w => w.IsActive).IsRequired();
+            builder.Property(w => w.IsDeleted).IsRequired();
             builder.ToTable("WorkingTypes");
         }
     }

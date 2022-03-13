@@ -18,6 +18,12 @@ namespace DataAccess.Concrete.EntityFramework.Mappings
             builder.Property(o => o.Id).ValueGeneratedOnAdd();
             builder.Property(o => o.Name).HasMaxLength(50);
             builder.Property(o => o.Name).IsRequired();
+            builder.Property(o => o.CreatedByName).IsRequired().HasMaxLength(50);
+            builder.Property(o => o.ModifiedByName).IsRequired().HasMaxLength(50);
+            builder.Property(o => o.ModifiedDate).IsRequired();
+            builder.Property(o => o.CreatedDate).IsRequired();
+            builder.Property(o => o.IsActive).IsRequired();
+            builder.Property(o => o.IsDeleted).IsRequired();
             builder.ToTable("OperationClaims");
         }
     }

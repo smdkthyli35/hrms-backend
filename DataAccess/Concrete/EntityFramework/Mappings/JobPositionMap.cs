@@ -17,6 +17,12 @@ namespace DataAccess.Concrete.EntityFramework.Mappings
             builder.Property(j => j.Id).ValueGeneratedOnAdd();
             builder.Property(j => j.Title).HasMaxLength(100);
             builder.Property(j => j.Title).IsRequired();
+            builder.Property(j => j.CreatedByName).IsRequired().HasMaxLength(50);
+            builder.Property(j => j.ModifiedByName).IsRequired().HasMaxLength(50);
+            builder.Property(j => j.ModifiedDate).IsRequired();
+            builder.Property(j => j.CreatedDate).IsRequired();
+            builder.Property(j => j.IsActive).IsRequired();
+            builder.Property(j => j.IsDeleted).IsRequired();
             builder.ToTable("JobPositions");
         }
     }

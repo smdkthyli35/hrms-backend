@@ -18,6 +18,12 @@ namespace DataAccess.Concrete.EntityFramework.Mappings
             builder.Property(j => j.Description).HasMaxLength(500);
             builder.Property(j => j.Description).IsRequired();
             builder.Property(j => j.NumberOfOpenPositions).IsRequired();
+            builder.Property(j => j.CreatedByName).IsRequired().HasMaxLength(50);
+            builder.Property(j => j.ModifiedByName).IsRequired().HasMaxLength(50);
+            builder.Property(j => j.ModifiedDate).IsRequired();
+            builder.Property(j => j.CreatedDate).IsRequired();
+            builder.Property(j => j.IsActive).IsRequired();
+            builder.Property(j => j.IsDeleted).IsRequired();
             builder.HasOne<City>(j => j.City).WithMany(c => c.JobAdverts).HasForeignKey(j => j.CityId);
             builder.HasOne<Employer>(j => j.Employer).WithMany(e => e.JobAdverts).HasForeignKey(j => j.EmployerId);
             builder.HasOne<JobPosition>(j => j.JobPosition).WithMany(j => j.JobAdverts).HasForeignKey(j => j.JobPositionId);

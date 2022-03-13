@@ -24,6 +24,12 @@ namespace DataAccess.Concrete.EntityFramework.Mappings
             builder.Property(e => e.Phone).HasMaxLength(13);
             builder.Property(e => e.Phone).IsRequired();
             builder.Property(e => e.IsApproved).IsRequired();
+            builder.Property(e => e.CreatedByName).IsRequired().HasMaxLength(50);
+            builder.Property(e => e.ModifiedByName).IsRequired().HasMaxLength(50);
+            builder.Property(e => e.ModifiedDate).IsRequired();
+            builder.Property(e => e.CreatedDate).IsRequired();
+            builder.Property(e => e.IsActive).IsRequired();
+            builder.Property(e => e.IsDeleted).IsRequired();
             builder.HasOne<Employer>(e => e.Employer).WithMany(e => e.EmployerUpdates).HasForeignKey(e => e.EmployerId);
             builder.ToTable("EmployerUpdates");
         }

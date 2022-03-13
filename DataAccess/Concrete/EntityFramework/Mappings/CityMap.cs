@@ -17,6 +17,12 @@ namespace DataAccess.Concrete.EntityFramework.Mappings
             builder.Property(c => c.Id).ValueGeneratedOnAdd();
             builder.Property(c => c.Name).HasMaxLength(50);
             builder.Property(c => c.Name).IsRequired();
+            builder.Property(c => c.CreatedByName).IsRequired().HasMaxLength(50);
+            builder.Property(c => c.ModifiedByName).IsRequired().HasMaxLength(50);
+            builder.Property(c => c.ModifiedDate).IsRequired();
+            builder.Property(c => c.CreatedDate).IsRequired();
+            builder.Property(c => c.IsActive).IsRequired();
+            builder.Property(c => c.IsDeleted).IsRequired();
             builder.ToTable("Cities");
         }
     }

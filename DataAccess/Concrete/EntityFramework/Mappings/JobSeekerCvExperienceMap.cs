@@ -18,6 +18,12 @@ namespace DataAccess.Concrete.EntityFramework.Mappings
             builder.Property(j => j.WorkplaceName).HasMaxLength(100);
             builder.Property(j => j.WorkplaceName).IsRequired();
             builder.Property(j => j.StartDate).IsRequired();
+            builder.Property(j => j.CreatedByName).IsRequired().HasMaxLength(50);
+            builder.Property(j => j.ModifiedByName).IsRequired().HasMaxLength(50);
+            builder.Property(j => j.ModifiedDate).IsRequired();
+            builder.Property(j => j.CreatedDate).IsRequired();
+            builder.Property(j => j.IsActive).IsRequired();
+            builder.Property(j => j.IsDeleted).IsRequired();
             builder.HasOne<JobSeekerCv>(j => j.JobSeekerCv).WithMany(j => j.JobSeekerCvExperiences).HasForeignKey(j => j.JobSeekerCvId);
             builder.HasOne<JobPosition>(j => j.JobPosition).WithMany(j => j.JobSeekerCvExperiences).HasForeignKey(j => j.JobPositionId);
             builder.ToTable("JobSeekerCvExperiences");
