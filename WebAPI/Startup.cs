@@ -38,6 +38,8 @@ namespace WebAPI
         {
             services.AddControllers();
 
+            services.AddCors();
+
             services.AddDbContext<HrmsContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("DataAccess")));
             services.AddScoped<DbContext>(provider => provider.GetService<HrmsContext>());
 
@@ -100,6 +102,8 @@ namespace WebAPI
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPI v1"));
             }
             app.ConfigureCustomExceptionMiddleware();
+
+            app.UseCors(builder => builder.WithOrigins("https://localhost:4200").AllowAnyHeader());
 
             app.UseHttpsRedirection();
 
