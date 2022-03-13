@@ -15,6 +15,7 @@ namespace Business.Abstract
         Task<IDataResult<JobAdvertListDto>> GetAllAsync();
         Task<IDataResult<JobAdvertListDto>> GetAllByNonDeletedAsync();
         Task<IDataResult<JobAdvertListDto>> GetAllByNonDeletedAndActiveAsync();
+        Task<IDataResult<JobAdvertListDto>> GetAllByIsActiveAndCityAndWorkingTimeForList(bool isActive, int cityId, short workingTimeId);
         Task<IResult> AddAsync(JobAdvertAddDto jobAdvertAddDto, string createdByName);
         Task<IResult> UpdateAsync(JobAdvertUpdateDto jobAdvertUpdateDto, string modifiedByName);
         Task<IResult> DeleteAsync(int jobAdvertId, string modifiedByName);

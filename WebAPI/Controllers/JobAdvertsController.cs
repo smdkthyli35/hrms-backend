@@ -43,6 +43,17 @@ namespace WebAPI.Controllers
             return BadRequest(result);
         }
 
+        [HttpGet("getallbyisactiveandcityandworkingtimeforlist")]
+        public async Task<IActionResult> GetAllByIsActiveAndCityAndWorkingTimeForList(bool isActive, int cityId, short workingTimeId)
+        {
+            var result = await _jobAdvertService.GetAllByIsActiveAndCityAndWorkingTimeForList(isActive, cityId, workingTimeId);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(JobAdvertAddDto jobAdvertAddDto)
         {

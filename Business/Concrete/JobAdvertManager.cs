@@ -71,6 +71,20 @@ namespace Business.Concrete
         }
 
         [CacheAspect]
+        public async Task<IDataResult<JobAdvertListDto>> GetAllByIsActiveAndCityAndWorkingTimeForList(bool isActive, int cityId, short workingTimeId)
+        {
+            var jobAdverts = await _jobAdvertDal.GetAllAsync(j => j.IsActive == isActive && j.CityId == cityId && j.WorkingTimeId == workingTimeId, j => j.City, j => j.Employer, j => j.JobPosition, j => j.WorkingTime, j => j.WorkingType);
+            if (jobAdverts.Count > -1)
+            {
+                return new SuccessDataResult<JobAdvertListDto>(new JobAdvertListDto
+                {
+                    JobAdverts = jobAdverts
+                });
+            }
+            return new ErrorDataResult<JobAdvertListDto>(Messages.JobAdvert.NotFound(isPlural: true));
+        }
+
+        [CacheAspect]
         public async Task<IDataResult<JobAdvertListDto>> GetAllByNonDeletedAndActiveAsync()
         {
             var jobAdverts = await _jobAdvertDal.GetAllAsync(j => !j.IsDeleted && j.IsActive, j => j.City, j => j.Employer, j => j.JobPosition, j => j.WorkingTime, j => j.WorkingType);
